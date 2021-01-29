@@ -2,8 +2,11 @@ package main;
 
 import config.InternetStoreConfiguration;
 import dao.country.CountryDao;
+import dao.country.HibernateCountryDao;
 import dao.country.MySqlCountryDao;
 import dao.currency.CurrencyDao;
+import dao.currency.HibernateCurrencyDao;
+import dao.currency.MySqlCurrencyDao;
 import entity.Country;
 import entity.Currency;
 import exception.FetchException;
@@ -21,17 +24,12 @@ public class Main {
 //        CurrencyDao currencyDao = applicationContext.getBean("hibernateCurrencyDao", HibernateCurrencyDao.class);
 //        DataSource dataSource = applicationContext.getBean("dataSource", BasicDataSource.class);
         CountryDao countryDao = applicationContext.getBean("mySqlCountryDao", MySqlCountryDao.class);
-
-//        insertTestCountries(testCountries(), countryDao);
-        testCountryDao(countryDao);
-//       Collection<Country> testCountries = testCountries();
-//        for (Country country :
-//                testCountries) {
-//            System.out.println(country);
-//        }
+        CurrencyDao currencyDao = applicationContext.getBean("hibernateCurrencyDao",
+                HibernateCurrencyDao.class);
+//        testCountryDao(countryDao, currencyDao);
     }
 
-    private static Collection<Country> testCountries(){
+    private static Collection<Country> testCountries() {
         Collection<Country> out = new HashSet<>();
         Currency eur = new Currency(1, "EUR");
         List<Currency> currencies = new LinkedList<>();
@@ -54,7 +52,7 @@ public class Main {
 
         currencies = new LinkedList<>();
         currencies.add(new Currency(4, "RUB"));
-        Country russia = new Country(7,"Russia" ,currencies);
+        Country russia = new Country(7, "Russia", currencies);
 
         currencies = new LinkedList<>();
         currencies.add(new Currency(3, "UAH"));
@@ -71,19 +69,19 @@ public class Main {
         return out;
     }
 
-    private static void insertTestCountries(Collection<Country>countries,
-                                            CountryDao countryDao){
-        try{
+    private static void insertTestCountries(Collection<Country> countries,
+                                            CountryDao countryDao) {
+        try {
             for (Country country :
                     countries) {
                 countryDao.save(country);
             }
-        }catch (StoreException e){
+        } catch (StoreException e) {
             e.printStackTrace();
         }
     }
 
-    private static Collection<Currency> testCurrencies(){
+    private static Collection<Currency> testCurrencies() {
         Collection<Currency> out = new HashSet<>();
         out.add(new Currency(1, "EUR"));
         out.add(new Currency(2, "KOD"));
@@ -100,33 +98,37 @@ public class Main {
         return out;
     }
 
-    private static void insertTestCurrencies(Collection<Currency> currencies, CurrencyDao currencyDao){
+    private static void insertTestCurrencies(Collection<Currency> currencies, CurrencyDao currencyDao) {
         try {
             for (Currency currency :
                     currencies) {
                 currencyDao.save(currency);
             }
-        }catch (StoreException e){
+        } catch (StoreException e) {
             e.printStackTrace();
         }
     }
 
-    private static void testCountryDao(CountryDao countryDao){
+    private static void testCountryDao(CountryDao countryDao, CurrencyDao currencyDao) {
         try {
-            countryDao.allEntities().forEach(System.out::println);
-            System.out.println("******************");
-            List<Currency> uah = new LinkedList<>();
-            uah.add(new Currency(3, "UAH"));
-            countryDao.update(8, new Country(3, "Ukraine", uah));
-            countryDao.allEntities().forEach(System.out::println);
-            System.out.println("******************");
+//            countryDao.allEntities().forEach(System.out::println);
+//            System.out.println("******************");
+////            List<Currency> uah = new LinkedList<>();
+////            uah.add(new Currency(3, "UAH"));
+////            countryDao.update(8, new Country(3, "Ukraine", uah));
+//            List<Currency> rub = new LinkedList<>();
+//            rub.add(currencyDao.getByName("RUB"));
+//            countryDao.save(new Country(7, "Russia", rub));
+//            countryDao.allEntities().forEach(System.out::println);
+//            System.out.println("******************");
+            System.out.println(countryDao.getByName("Britain"));
         } catch (Throwable e) {
             e.printStackTrace();
         }
 
     }
 
-    private static void testCurrencyDao(CurrencyDao currencyDao){
+    private static void testCurrencyDao(CurrencyDao currencyDao) {
         Currency currency = new Currency(1, "USD");
         try {
 //            currencyDao.delete(currency.getId());
@@ -139,7 +141,7 @@ public class Main {
             currencyDao.update(currency.getId(), currency);
             System.out.println(currencyDao.allEntities());
             currencyDao.delete(currency.getId());
-        }catch (Throwable t){
+        } catch (Throwable t) {
             t.printStackTrace();
         }
     }

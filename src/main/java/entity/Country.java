@@ -12,12 +12,12 @@ public final class Country {
 
     @Id
     @Column(name = "country_id")
-    private int id;
+    private Integer id;
 
     @Column(name = "country_name", unique = true)
     private String countryName;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "is_country_to_currency",
             joinColumns = @JoinColumn(name = "country_id", unique = false),
             inverseJoinColumns = @JoinColumn(name = "currency_id", unique = false))
@@ -36,11 +36,11 @@ public final class Country {
         currencies.add(currency);
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -65,7 +65,7 @@ public final class Country {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Country country = (Country) o;
-        return id == country.id &&
+        return Objects.equals(id, country.id) &&
                 Objects.equals(countryName, country.countryName) &&
                 Objects.equals(currencies, country.currencies);
     }

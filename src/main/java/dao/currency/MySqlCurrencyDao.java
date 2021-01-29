@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
-import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -31,7 +30,6 @@ public final class MySqlCurrencyDao implements CurrencyDao {
     }
 
     @Override
-    @Nullable
     public Currency getById(Integer id) throws FetchException {
         String sql = "SELECT currency_id, currency_name FROM is_currency WHERE currency_id = ?;";
         Currency out = null;
@@ -47,6 +45,9 @@ public final class MySqlCurrencyDao implements CurrencyDao {
             }
         } catch (SQLException e) {
             throw new FetchException(e);
+        }
+        if(out == null){
+            throw new FetchException("No such currency with id = " + id);
         }
         return out;
     }
@@ -123,24 +124,18 @@ public final class MySqlCurrencyDao implements CurrencyDao {
 
     @Override
     public Currency getByName(String name) throws FetchException {
-        String sql = "SELECT currency_id, currency_name FROM is_currency WHERE currency_name = ?;";
-        Currency out = null;
+        String sql = "SELECT currency_id FROM is_currency WHERE currency_name = ?;";
         try(Connection connection = dataSource.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(sql)){
             preparedStatement.setString(1, name);
             try(ResultSet resultSet = preparedStatement.executeQuery()){
-                while(resultSet.next()){
-                    int currency_id = resultSet.getInt("currency_id");
-                    String currency_name = resultSet.getString("currency_name");
-                    out = new Currency(currency_id, currency_name);
+                if(resultSet.next()){
+                    return getById(resultSet.getInt("currency_id"));
                 }
+                throw new FetchException("No such currency!");
             }
         } catch (SQLException e) {
             throw new FetchException(e);
         }
-        if(out == null){
-            throw new FetchException("No such currency: " + name);
-        }
-        return out;
     }
 }
