@@ -17,6 +17,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 
 @Repository("mySqlCurrencyDao")
 @NotThreadSafe
@@ -31,6 +32,7 @@ public final class MySqlCurrencyDao implements CurrencyDao {
 
     @Override
     public Currency getById(Integer id) throws FetchException {
+        Objects.requireNonNull(id);
         String sql = "SELECT currency_id, currency_name FROM is_currency WHERE currency_id = ?;";
         Currency out = null;
         try(Connection connection = dataSource.getConnection();
@@ -73,6 +75,7 @@ public final class MySqlCurrencyDao implements CurrencyDao {
 
     @Override
     public void save(Currency currency) throws StoreException {
+        Objects.requireNonNull(currency);
         String sql = "INSERT INTO is_currency(currency_id, currency_name) VALUES(?, ?);";
         try(Connection connection = dataSource.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(sql)){
@@ -86,6 +89,8 @@ public final class MySqlCurrencyDao implements CurrencyDao {
 
     @Override
     public void update(Integer id, Currency currency) throws UpdateException {
+        Objects.requireNonNull(id);
+        Objects.requireNonNull(currency);
         String sql = "UPDATE is_currency SET currency_name = ? WHERE currency_id = ?;";
         try(Connection connection = dataSource.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(sql)){
@@ -99,6 +104,7 @@ public final class MySqlCurrencyDao implements CurrencyDao {
 
     @Override
     public void delete(Integer id) throws DeleteException {
+        Objects.requireNonNull(id);
         String sql = "DELETE FROM is_currency WHERE currency_id = ?;";
         try(Connection connection = dataSource.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(sql)){
@@ -111,6 +117,7 @@ public final class MySqlCurrencyDao implements CurrencyDao {
 
     @Override
     public void insertIgnore(Currency currency) throws StoreException {
+        Objects.requireNonNull(currency);
         String sql = "INSERT IGNORE INTO is_currency(currency_id, currency_name) VALUES(?, ?);";
         try(Connection connection = dataSource.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(sql)){
@@ -124,6 +131,7 @@ public final class MySqlCurrencyDao implements CurrencyDao {
 
     @Override
     public Currency getByName(String name) throws FetchException {
+        Objects.requireNonNull(name);
         String sql = "SELECT currency_id FROM is_currency WHERE currency_name = ?;";
         try(Connection connection = dataSource.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(sql)){

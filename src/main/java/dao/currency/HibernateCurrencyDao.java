@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.Collection;
+import java.util.Objects;
 
 @Repository("hibernateCurrencyDao")
 @NotThreadSafe
@@ -20,6 +21,7 @@ public final class HibernateCurrencyDao implements CurrencyDao {
 
     @Override
     public Currency getById(Integer id) throws FetchException {
+        Objects.requireNonNull(id);
         Currency out;
         try (Session session = HibernateUtils.openSession()) {
             Transaction transaction = session.beginTransaction();
@@ -49,6 +51,7 @@ public final class HibernateCurrencyDao implements CurrencyDao {
 
     @Override
     public void save(Currency currency) throws StoreException {
+        Objects.requireNonNull(currency);
         try (Session session = HibernateUtils.openSession()) {
             Transaction transaction = session.beginTransaction();
             session.save(currency);
@@ -60,6 +63,8 @@ public final class HibernateCurrencyDao implements CurrencyDao {
 
     @Override
     public void update(Integer id, Currency currency) throws UpdateException {
+        Objects.requireNonNull(id);
+        Objects.requireNonNull(currency);
         try (Session session = HibernateUtils.openSession()) {
             Transaction transaction = session.beginTransaction();
             Query<?> q = session.createQuery("UPDATE entity.Currency SET currencyName = :currencyName WHERE id = :id");
@@ -74,6 +79,7 @@ public final class HibernateCurrencyDao implements CurrencyDao {
 
     @Override
     public void delete(Integer id) throws DeleteException {
+        Objects.requireNonNull(id);
         try (Session session = HibernateUtils.openSession()) {
             Transaction transaction = session.beginTransaction();
             Query<?> q = session.createQuery("DELETE FROM entity.Currency WHERE id = :id");
@@ -87,6 +93,7 @@ public final class HibernateCurrencyDao implements CurrencyDao {
 
     @Override
     public void insertIgnore(Currency currency) throws StoreException {
+        Objects.requireNonNull(currency);
         try (Session session = HibernateUtils.openSession()) {
             Transaction transaction = session.beginTransaction();
             Query<?> q = session.createSQLQuery("INSERT IGNORE INTO is_currency(currency_id, currency_name) VALUES (?, ?)");
@@ -101,6 +108,7 @@ public final class HibernateCurrencyDao implements CurrencyDao {
 
     @Override
     public Currency getByName(String name) throws FetchException {
+        Objects.requireNonNull(name);
         try (Session session = HibernateUtils.openSession()) {
             Transaction transaction = session.beginTransaction();
             Query<?> q = session.createQuery("SELECT c FROM entity.Currency c WHERE c.currencyName = :currencyName");

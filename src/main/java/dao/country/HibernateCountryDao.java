@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.Collection;
+import java.util.Objects;
 
 @Repository("hibernateCountryDao")
 @NotThreadSafe
@@ -20,6 +21,7 @@ public final class HibernateCountryDao implements CountryDao {
 
     @Override
     public Country getByName(String countryName) throws FetchException {
+        Objects.requireNonNull(countryName);
         Country out;
         try (Session session = HibernateUtils.openSession()) {
             Transaction transaction = session.beginTransaction();
@@ -38,6 +40,7 @@ public final class HibernateCountryDao implements CountryDao {
 
     @Override
     public Country getById(Integer id) throws FetchException {
+        Objects.requireNonNull(id);
         Country out;
         try (Session session = HibernateUtils.openSession()) {
             Transaction transaction = session.beginTransaction();
@@ -67,6 +70,7 @@ public final class HibernateCountryDao implements CountryDao {
 
     @Override
     public void save(Country country) throws StoreException {
+        Objects.requireNonNull(country);
         try (Session session = HibernateUtils.openSession()) {
             Transaction transaction = session.beginTransaction();
             session.save(country);
@@ -78,6 +82,8 @@ public final class HibernateCountryDao implements CountryDao {
 
     @Override
     public void update(Integer id, Country country) throws UpdateException {
+        Objects.requireNonNull(id);
+        Objects.requireNonNull(country);
         country.setId(id);
         try (Session session = HibernateUtils.openSession()) {
             Transaction transaction = session.beginTransaction();
@@ -90,6 +96,7 @@ public final class HibernateCountryDao implements CountryDao {
 
     @Override
     public void delete(Integer id) throws DeleteException {
+        Objects.requireNonNull(id);
         try (Session session = HibernateUtils.openSession()) {
             Transaction transaction = session.beginTransaction();
             Query<?> query = session.createQuery("DELETE FROM entity.Country c WHERE c.id = :id");

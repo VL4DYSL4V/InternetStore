@@ -35,6 +35,7 @@ public final class MySqlCountryDao implements CountryDao {
 
     @Override
     public Country getById(Integer id) throws FetchException {
+        Objects.requireNonNull(id);
         String sql = "SELECT country_id, country_name, is_currency.currency_id, currency_name FROM " +
                 "is_country INNER JOIN is_country_to_currency USING(country_id) " +
                 "INNER JOIN is_currency USING(currency_id) " +
@@ -99,6 +100,7 @@ public final class MySqlCountryDao implements CountryDao {
 
     @Override
     public void save(Country country) throws StoreException {
+        Objects.requireNonNull(country);
         String saveCountrySql = "INSERT INTO is_country (country_id, country_name) VALUES (?, ?);";
         String saveCountryToCurrency = "INSERT INTO is_country_to_currency(country_id, currency_id) VALUES (?, ?);";
         try (Connection connection = dataSource.getConnection()) {
@@ -128,6 +130,8 @@ public final class MySqlCountryDao implements CountryDao {
 
     @Override
     public void update(Integer id, Country country) throws UpdateException {
+        Objects.requireNonNull(id);
+        Objects.requireNonNull(country);
         String updateNameSql = "UPDATE is_country SET country_name = ? WHERE country_id = ?;";
         String deleteCountryToCurrency = "DELETE FROM is_country_to_currency WHERE country_id = ?;";
         String saveCountryToCurrency = "INSERT INTO is_country_to_currency(country_id, currency_id) VALUES (?, ?);";
@@ -161,6 +165,7 @@ public final class MySqlCountryDao implements CountryDao {
 
     @Override
     public void delete(Integer id) throws DeleteException {
+        Objects.requireNonNull(id);
         String sql = "DELETE FROM is_country WHERE country_id = ?;";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -173,6 +178,7 @@ public final class MySqlCountryDao implements CountryDao {
 
     @Override
     public Country getByName(String countryName) throws FetchException{
+        Objects.requireNonNull(countryName);
         String sql = "SELECT country_id FROM is_country WHERE country_name = ?;";
         try(Connection connection = dataSource.getConnection();
             PreparedStatement getIdPrepStatement = connection.prepareStatement(sql)){
