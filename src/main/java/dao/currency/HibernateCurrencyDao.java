@@ -20,14 +20,18 @@ public final class HibernateCurrencyDao implements CurrencyDao {
 
     @Override
     public Currency getById(Integer id) throws FetchException {
+        Currency out;
         try (Session session = HibernateUtils.openSession()) {
             Transaction transaction = session.beginTransaction();
-            Currency out = session.get(Currency.class, id);
+            out = session.get(Currency.class, id);
             transaction.commit();
-            return out;
         } catch (Throwable t) {
             throw new FetchException(t);
         }
+        if(out == null){
+            throw new FetchException("No such currency with id = " + id);
+        }
+        return out;
     }
 
     @Override

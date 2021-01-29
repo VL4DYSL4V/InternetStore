@@ -15,7 +15,7 @@ public final class Currency {
 
     @Id
     @Column(name = "currency_id")
-    private int id;
+    private Integer id;
 
     @Column(name = "currency_name", unique = true)
     private String currencyName;
@@ -28,11 +28,11 @@ public final class Currency {
         this.currencyName = currencyName;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -49,7 +49,7 @@ public final class Currency {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Currency currency = (Currency) o;
-        return id == currency.id &&
+        return Objects.equals(id, currency.id) &&
                 Objects.equals(currencyName, currency.currencyName);
     }
 

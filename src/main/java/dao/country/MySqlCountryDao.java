@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
-import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -35,7 +34,6 @@ public final class MySqlCountryDao implements CountryDao {
     }
 
     @Override
-    @Nullable
     public Country getById(Integer id) throws FetchException {
         String sql = "SELECT country_id, country_name, is_currency.currency_id, currency_name FROM " +
                 "is_country INNER JOIN is_country_to_currency USING(country_id) " +
@@ -50,7 +48,7 @@ public final class MySqlCountryDao implements CountryDao {
                     if (country == null) {
                         country = new Country();
                     }
-                    if (id != 0 && country.getId() == 0) {
+                    if (!Objects.equals(id, 0) && Objects.equals(country.getId(), 0)) {
                         country.setId(resultSet.getInt("country_id"));
                     }
                     if (country.getCountryName() == null) {
@@ -65,41 +63,38 @@ public final class MySqlCountryDao implements CountryDao {
         } catch (SQLException e) {
             throw new FetchException(e);
         }
+        if(country == null){
+            throw new FetchException("No such country with id = " + id);
+        }
         return country;
     }
 
-    //TODO: Use separate query to fetch country_id's and currency_id's and set these values, insted of iterating over HashSet instance
     @Override
     public Collection<Country> allEntities() throws FetchException {
-        String sql = "SELECT country_id, country_name, is_currency.currency_id, currency_name FROM " +
-                "is_country INNER JOIN is_country_to_currency USING(country_id) " +
-                "INNER JOIN is_currency USING(currency_id);";
-        Collection<Country> out = new HashSet<>(100);
+        String fetchCountrySql = "SELECT is_country.country_id, country_name, currency_id FROM is_country " +
+                "INNER JOIN is_country_to_currency USING (country_id);";
+        Map<Integer, Country> outValuesHolder = new HashMap<>();
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
-                    Country country = new Country();
-                    int id = resultSet.getInt("country_id");
-                    country.setId(id);
-                    country.setCountryName(resultSet.getString("country_name"));
-                    Currency currency = new Currency(resultSet.getInt("currency_id"),
-                            resultSet.getString("currency_name"));
-                    Country alreadyFetched = out.stream()
-                            .filter(e -> e.getId() == country.getId())
-                            .findAny().orElse(country);
-                    if (country == alreadyFetched) {
-                        country.addCurrency(currency);
-                        out.add(country);
-                    } else {
-                        alreadyFetched.addCurrency(currency);
+             PreparedStatement countryPrepStatement = connection.prepareStatement(fetchCountrySql)) {
+            try(ResultSet resultSet = countryPrepStatement.executeQuery()){
+                while(resultSet.next()){
+                    Integer countryId= resultSet.getInt("country_id");
+                    String countryName = resultSet.getString("country_name");
+                    Country country = outValuesHolder.get(countryId);
+                    if(country == null){
+                        country = new Country();
+                        country.setId(countryId);
+                        country.setCountryName(countryName);
+                        outValuesHolder.put(countryId, country);
                     }
+                    Currency currency = currencyDao.getById(resultSet.getInt("currency_id"));
+                    country.addCurrency(currency);
                 }
             }
         } catch (SQLException e) {
             throw new FetchException(e);
         }
-        return out;
+        return outValuesHolder.values();
     }
 
     @Override
@@ -175,4 +170,25 @@ public final class MySqlCountryDao implements CountryDao {
             throw new DeleteException(e);
         }
     }
+
+    @Override
+    public Country getByName(String countryName) throws FetchException{
+        String sql = "SELECT country_id FROM is_country WHERE country_name = ?;";
+        try(Connection connection = dataSource.getConnection();
+            PreparedStatement getIdPrepStatement = connection.prepareStatement(sql)){
+            getIdPrepStatement.setString(1, countryName);
+
+            try(ResultSet resultSet = getIdPrepStatement.executeQuery()){
+                if (resultSet.next()){
+                    Integer id = resultSet.getInt("country_id");
+                    return getById(id);
+                }
+                throw new FetchException("No such country with name = " + countryName);
+            }
+        }catch (SQLException e){
+            throw new FetchException(e);
+        }
+    }
+
+
 }
