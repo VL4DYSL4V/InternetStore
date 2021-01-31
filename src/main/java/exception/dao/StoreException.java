@@ -1,4 +1,4 @@
-package exception;
+package exception.dao;
 
 public final class StoreException extends Exception {
 

@@ -1,4 +1,4 @@
-package exception;
+package exception.dao;
 
 public final class UpdateException extends Exception {
 

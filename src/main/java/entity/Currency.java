@@ -2,6 +2,7 @@ package entity;
 
 import constraint.CurrencyConstraint;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -11,13 +12,14 @@ import java.util.Objects;
 @Table
 @Entity(name = "is_currency")
 @CurrencyConstraint
+@NotThreadSafe
 public final class Currency {
 
     @Id
-    @Column(name = "currency_id")
+    @Column(name = "currency_id", unique = true, nullable = false)
     private Integer id;
 
-    @Column(name = "currency_name", unique = true)
+    @Column(name = "currency_name", unique = true, nullable = false)
     private String currencyName;
 
     public Currency() {

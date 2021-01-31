@@ -26,10 +26,13 @@ import java.util.Locale;
 import java.util.Properties;
 
 @Configuration
-@ComponentScan(value = {"config", "dao"})
+@ComponentScan(value = {"config", "dao", "service"})
 //@EnableWebMvc
 @EnableAspectJAutoProxy
-@Import(DatabaseConfig.class)
+@Import(value = {
+        DatabaseConfig.class,
+        SecurityConfig.class
+})
 public class InternetStoreConfiguration{
 
 //    @Override

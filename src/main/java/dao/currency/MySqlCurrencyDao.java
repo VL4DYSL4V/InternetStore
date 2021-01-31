@@ -1,10 +1,10 @@
 package dao.currency;
 
 import entity.Currency;
-import exception.DeleteException;
-import exception.FetchException;
-import exception.StoreException;
-import exception.UpdateException;
+import exception.dao.DeleteException;
+import exception.dao.FetchException;
+import exception.dao.StoreException;
+import exception.dao.UpdateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
@@ -26,7 +26,7 @@ public final class MySqlCurrencyDao implements CurrencyDao {
     private final DataSource dataSource;
 
     @Autowired
-    public MySqlCurrencyDao(@Qualifier("dataSource") DataSource dataSource){
+    public MySqlCurrencyDao(@Qualifier("dataSource") DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
@@ -34,34 +34,30 @@ public final class MySqlCurrencyDao implements CurrencyDao {
     public Currency getById(Integer id) throws FetchException {
         Objects.requireNonNull(id);
         String sql = "SELECT currency_id, currency_name FROM is_currency WHERE currency_id = ?;";
-        Currency out = null;
-        try(Connection connection = dataSource.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, id);
-            try(ResultSet resultSet = preparedStatement.executeQuery()){
-                while(resultSet.next()){
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
                     int currency_id = resultSet.getInt("currency_id");
                     String currency_name = resultSet.getString("currency_name");
-                    out = new Currency(currency_id, currency_name);
+                    return new Currency(currency_id, currency_name);
                 }
+                throw new FetchException("No such currency with id = " + id);
             }
         } catch (SQLException e) {
             throw new FetchException(e);
         }
-        if(out == null){
-            throw new FetchException("No such currency with id = " + id);
-        }
-        return out;
     }
 
     @Override
     public Collection<Currency> allEntities() throws FetchException {
         String sql = "SELECT currency_id, currency_name FROM is_currency;";
         Collection<Currency> out = new HashSet<>();
-        try(Connection connection = dataSource.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(sql)){
-            try(ResultSet resultSet = preparedStatement.executeQuery()){
-                while(resultSet.next()){
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
                     int currency_id = resultSet.getInt("currency_id");
                     String currency_name = resultSet.getString("currency_name");
                     out.add(new Currency(currency_id, currency_name));
@@ -77,10 +73,23 @@ public final class MySqlCurrencyDao implements CurrencyDao {
     public void save(Currency currency) throws StoreException {
         Objects.requireNonNull(currency);
         String sql = "INSERT INTO is_currency(currency_id, currency_name) VALUES(?, ?);";
-        try(Connection connection = dataSource.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, currency.getId());
             preparedStatement.setString(2, currency.getCurrencyName());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new StoreException(e);
+        }
+    }
+
+    @Override
+    public void saveIgnoreId(Currency currency) throws StoreException {
+        Objects.requireNonNull(currency);
+        String sql = "INSERT INTO is_currency(currency_name) VALUES(?);";
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, currency.getCurrencyName());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new StoreException(e);
@@ -92,8 +101,8 @@ public final class MySqlCurrencyDao implements CurrencyDao {
         Objects.requireNonNull(id);
         Objects.requireNonNull(currency);
         String sql = "UPDATE is_currency SET currency_name = ? WHERE currency_id = ?;";
-        try(Connection connection = dataSource.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, currency.getCurrencyName());
             preparedStatement.setInt(2, id);
             preparedStatement.executeUpdate();
@@ -106,8 +115,8 @@ public final class MySqlCurrencyDao implements CurrencyDao {
     public void delete(Integer id) throws DeleteException {
         Objects.requireNonNull(id);
         String sql = "DELETE FROM is_currency WHERE currency_id = ?;";
-        try(Connection connection = dataSource.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, id);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
@@ -119,8 +128,8 @@ public final class MySqlCurrencyDao implements CurrencyDao {
     public void insertIgnore(Currency currency) throws StoreException {
         Objects.requireNonNull(currency);
         String sql = "INSERT IGNORE INTO is_currency(currency_id, currency_name) VALUES(?, ?);";
-        try(Connection connection = dataSource.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, currency.getId());
             preparedStatement.setString(2, currency.getCurrencyName());
             preparedStatement.executeUpdate();
@@ -132,18 +141,31 @@ public final class MySqlCurrencyDao implements CurrencyDao {
     @Override
     public Currency getByName(String name) throws FetchException {
         Objects.requireNonNull(name);
-        String sql = "SELECT currency_id FROM is_currency WHERE currency_name = ?;";
-        try(Connection connection = dataSource.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+        String sql = "SELECT currency_id FROM is_currency WHERE BINARY currency_name = ?;";
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, name);
-            try(ResultSet resultSet = preparedStatement.executeQuery()){
-                if(resultSet.next()){
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
                     return getById(resultSet.getInt("currency_id"));
                 }
                 throw new FetchException("No such currency!");
             }
         } catch (SQLException e) {
             throw new FetchException(e);
+        }
+    }
+
+    @Override
+    public void deleteByName(String name) throws DeleteException {
+        Objects.requireNonNull(name);
+        String sql = "DELETE FROM is_currency WHERE BINARY currency_name = ?;";
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, name);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new DeleteException(e);
         }
     }
 }

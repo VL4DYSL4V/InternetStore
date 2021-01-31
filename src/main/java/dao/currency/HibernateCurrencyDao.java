@@ -1,11 +1,12 @@
 package dao.currency;
 
 import entity.Currency;
-import exception.DeleteException;
-import exception.FetchException;
-import exception.StoreException;
-import exception.UpdateException;
+import exception.dao.DeleteException;
+import exception.dao.FetchException;
+import exception.dao.StoreException;
+import exception.dao.UpdateException;
 import hibernate.HibernateUtils;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
@@ -27,10 +28,10 @@ public final class HibernateCurrencyDao implements CurrencyDao {
             Transaction transaction = session.beginTransaction();
             out = session.get(Currency.class, id);
             transaction.commit();
-        } catch (Throwable t) {
-            throw new FetchException(t);
+        } catch (HibernateException e) {
+            throw new FetchException(e);
         }
-        if(out == null){
+        if (out == null) {
             throw new FetchException("No such currency with id = " + id);
         }
         return out;
@@ -44,8 +45,8 @@ public final class HibernateCurrencyDao implements CurrencyDao {
                     session.createQuery("SELECT c FROM entity.Currency c", Currency.class).list();
             transaction.commit();
             return out;
-        } catch (Throwable t) {
-            throw new FetchException(t);
+        } catch (HibernateException e) {
+            throw new FetchException(e);
         }
     }
 
@@ -56,24 +57,39 @@ public final class HibernateCurrencyDao implements CurrencyDao {
             Transaction transaction = session.beginTransaction();
             session.save(currency);
             transaction.commit();
-        } catch (Throwable t) {
-            throw new StoreException(t);
+        } catch (HibernateException e) {
+            throw new StoreException(e);
         }
     }
 
     @Override
+    public void saveIgnoreId(Currency currency) throws StoreException {
+        Objects.requireNonNull(currency);
+        try(Session session = HibernateUtils.openSession()){
+            Transaction transaction = session.beginTransaction();
+            Query<?> query = session.createSQLQuery("INSERT INTO is_currency (currency_name) VALUES (?);");
+            query.setParameter(1, currency.getCurrencyName());
+            transaction.commit();
+        }catch (HibernateException e){
+            throw new StoreException(e);
+        }
+    }
+
+    @Override
+    @SuppressWarnings("Duplicates")
     public void update(Integer id, Currency currency) throws UpdateException {
         Objects.requireNonNull(id);
         Objects.requireNonNull(currency);
+        Integer prevId = currency.getId();
+        currency.setId(id);
         try (Session session = HibernateUtils.openSession()) {
             Transaction transaction = session.beginTransaction();
-            Query<?> q = session.createQuery("UPDATE entity.Currency SET currencyName = :currencyName WHERE id = :id");
-            q.setParameter("currencyName", currency.getCurrencyName());
-            q.setParameter("id", id);
-            q.executeUpdate();
+            session.update(currency);
             transaction.commit();
-        } catch (Throwable t) {
-            throw new UpdateException(t);
+        } catch (HibernateException e) {
+            throw new UpdateException(e);
+        }finally {
+            currency.setId(prevId);
         }
     }
 
@@ -86,8 +102,8 @@ public final class HibernateCurrencyDao implements CurrencyDao {
             q.setParameter("id", id);
             q.executeUpdate();
             transaction.commit();
-        } catch (Throwable t) {
-            throw new DeleteException(t);
+        } catch (HibernateException e) {
+            throw new DeleteException(e);
         }
     }
 
@@ -101,8 +117,8 @@ public final class HibernateCurrencyDao implements CurrencyDao {
             q.setParameter(2, currency.getCurrencyName());
             q.executeUpdate();
             transaction.commit();
-        } catch (Throwable t) {
-            throw new StoreException(t);
+        } catch (HibernateException e) {
+            throw new StoreException(e);
         }
     }
 
@@ -111,16 +127,30 @@ public final class HibernateCurrencyDao implements CurrencyDao {
         Objects.requireNonNull(name);
         try (Session session = HibernateUtils.openSession()) {
             Transaction transaction = session.beginTransaction();
-            Query<?> q = session.createQuery("SELECT c FROM entity.Currency c WHERE c.currencyName = :currencyName");
+            Query<Currency> q = session.createQuery("SELECT c FROM entity.Currency c WHERE c.currencyName = :currencyName", Currency.class);
             q.setParameter("currencyName", name);
-            Object out = q.uniqueResult();
+            Currency out = q.uniqueResult();
             transaction.commit();
             if (out != null) {
-                return (Currency) out;
+                return out;
             }
-        } catch (Throwable t) {
-            throw new FetchException(t);
+        } catch (HibernateException e) {
+            throw new FetchException(e);
         }
         throw new FetchException("No such currency: " + name);
+    }
+
+    @Override
+    public void deleteByName(String name) throws DeleteException {
+        Objects.requireNonNull(name);
+        try (Session session = HibernateUtils.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Query<?> query = session.createQuery("DELETE FROM entity.Currency c WHERE c.currencyName = :currencyName");
+            query.setParameter("currencyName", name);
+            query.executeUpdate();
+            transaction.commit();
+        } catch (HibernateException e) {
+            throw new DeleteException(e);
+        }
     }
 }

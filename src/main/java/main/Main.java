@@ -1,19 +1,33 @@
 package main;
 
 import config.InternetStoreConfiguration;
+import dao.bankAccount.BankAccountDao;
+import dao.bankAccount.HibernateBankAccountDao;
+import dao.bankAccount.MySqlBankAccountDao;
 import dao.country.CountryDao;
 import dao.country.HibernateCountryDao;
 import dao.country.MySqlCountryDao;
 import dao.currency.CurrencyDao;
-import dao.currency.HibernateCurrencyDao;
 import dao.currency.MySqlCurrencyDao;
+import dao.item.HibernateItemDao;
+import dao.item.ItemDao;
+import entity.BankAccount;
 import entity.Country;
 import entity.Currency;
-import exception.FetchException;
-import exception.StoreException;
+import entity.Item;
+import exception.dao.FetchException;
+import exception.dao.StoreException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import service.EncryptionService;
+import service.EncryptionServiceImpl;
 
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import java.math.BigDecimal;
+import java.security.SecureRandom;
+import java.security.spec.KeySpec;
+import java.sql.Date;
 import java.util.*;
 
 public class Main {
@@ -21,12 +35,80 @@ public class Main {
     public static void main(String[] args) throws Exception {
         ApplicationContext applicationContext =
                 new AnnotationConfigApplicationContext(InternetStoreConfiguration.class);
-//        CurrencyDao currencyDao = applicationContext.getBean("hibernateCurrencyDao", HibernateCurrencyDao.class);
-//        DataSource dataSource = applicationContext.getBean("dataSource", BasicDataSource.class);
-        CountryDao countryDao = applicationContext.getBean("mySqlCountryDao", MySqlCountryDao.class);
-        CurrencyDao currencyDao = applicationContext.getBean("hibernateCurrencyDao",
-                HibernateCurrencyDao.class);
-//        testCountryDao(countryDao, currencyDao);
+        CountryDao mySqlCountryDao = applicationContext.getBean("mySqlCountryDao", MySqlCountryDao.class);
+        CountryDao hibCountryDao = applicationContext.getBean("hibernateCountryDao", HibernateCountryDao.class);
+        CurrencyDao currencyDao = applicationContext.getBean("mySqlCurrencyDao",
+                MySqlCurrencyDao.class);
+        BankAccountDao bankAccountDao = applicationContext.getBean("hibernateBankAccountDao", HibernateBankAccountDao.class);
+        BankAccountDao sqlBankAccountDao = applicationContext.getBean("mySqlBankAccountDao", MySqlBankAccountDao.class);
+
+        ItemDao itemDao = applicationContext.getBean("hibernateItemDao", HibernateItemDao.class);
+        Currency wrongCurrency = new Currency(19, "AAA");
+        Currency rightCurrency = new Currency(4, "RUB");
+
+//
+//        Country c = new Country();
+//        c.setId(11);
+//        c.setCountryName("Russia");
+//        List<Currency> currencies = new LinkedList<>();
+//        currencies.add(rightCurrency);
+//        c.setCurrencies(currencies);
+//        hibCountryDao.update(7, c);
+
+
+//        Item item = new Item();
+//        item.setId(1L);
+//        item.setAmount(2);
+//        item.setName("Name");
+//        item.setCurrency(wrongCurrency);
+//        item.setImageUrl("url");
+//        item.setItemDescription("descr");
+//        item.setPriceForOne(BigDecimal.ONE);
+//        item.setPutUpForSale(new Date(2021, 1, 1));
+//        itemDao.save(item);
+//        testBankAccountDao(bankAccountDao, currencyDao);
+//        testBankAccountDao(bankAccountDao, currencyDao);
+
+    }
+
+    private static void testBankAccountDao(BankAccountDao bankAccountDao, CurrencyDao currencyDao) {
+        try {
+            Currency eur = currencyDao.getByName("EUR");
+            Currency usd = currencyDao.getByName("USD");
+//            Currency uah = currencyDao.getByName("UAH");
+
+            Currency uah = new Currency(2, "UaH");
+
+            BankAccount eurAccount = new BankAccount(1L, BigDecimal.valueOf(347782.2), eur);
+            BankAccount usdAccount = new BankAccount(2L, BigDecimal.valueOf(56332.42), usd);
+            BankAccount uahAccount = new BankAccount(3L, BigDecimal.valueOf(18900.04), uah);
+            BankAccount usd2Account = new BankAccount(4L, BigDecimal.valueOf(12345.89), usd);
+
+            bankAccountDao.save(eurAccount);
+            bankAccountDao.save(usdAccount);
+            bankAccountDao.save(uahAccount);
+            bankAccountDao.save(usd2Account);
+
+            bankAccountDao.allEntities().forEach(System.out::println);
+            System.out.println("Delete: ");
+
+            bankAccountDao.delete(uahAccount.getId());
+            bankAccountDao.allEntities().forEach(System.out::println);
+
+            try {
+                System.out.println(bankAccountDao.getById(uahAccount.getId()));
+            } catch (FetchException e) {
+                System.out.println("Exception occurred");
+            }
+            System.out.println("Get by id: ");
+            System.out.println(bankAccountDao.getById(usdAccount.getId()));
+
+            System.out.println("Update: ");
+            bankAccountDao.update(usdAccount.getId(), new BankAccount(usdAccount.getId(), BigDecimal.valueOf(0.45), usd));
+            bankAccountDao.allEntities().forEach(System.out::println);
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
     }
 
     private static Collection<Country> testCountries() {
@@ -111,8 +193,8 @@ public class Main {
 
     private static void testCountryDao(CountryDao countryDao, CurrencyDao currencyDao) {
         try {
-//            countryDao.allEntities().forEach(System.out::println);
-//            System.out.println("******************");
+            countryDao.allEntities().forEach(System.out::println);
+            System.out.println("******************");
 ////            List<Currency> uah = new LinkedList<>();
 ////            uah.add(new Currency(3, "UAH"));
 ////            countryDao.update(8, new Country(3, "Ukraine", uah));
@@ -131,7 +213,7 @@ public class Main {
     private static void testCurrencyDao(CurrencyDao currencyDao) {
         Currency currency = new Currency(1, "USD");
         try {
-//            currencyDao.delete(currency.getId());
+            currencyDao.delete(currency.getId());
             currencyDao.save(currency);
             System.out.println(currencyDao.allEntities());
             System.out.println(currencyDao.getById(currency.getId()));

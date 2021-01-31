@@ -1,5 +1,6 @@
 package entity;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.*;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -8,19 +9,20 @@ import java.util.Objects;
 
 @Table
 @Entity(name = "is_country")
+@NotThreadSafe
 public final class Country {
 
     @Id
-    @Column(name = "country_id")
+    @Column(name = "country_id", unique = true, nullable = false)
     private Integer id;
 
-    @Column(name = "country_name", unique = true)
+    @Column(name = "country_name", unique = true, nullable = false)
     private String countryName;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "is_country_to_currency",
-            joinColumns = @JoinColumn(name = "country_id", unique = false),
-            inverseJoinColumns = @JoinColumn(name = "currency_id", unique = false))
+            joinColumns = @JoinColumn(name = "country_id", nullable = false),
+            inverseJoinColumns = @JoinColumn(name = "currency_id", nullable = false))
     private List<Currency> currencies = new LinkedList<>();
 
     public Country() {
