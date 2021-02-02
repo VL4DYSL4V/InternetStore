@@ -1,7 +1,12 @@
 package entity;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import javax.annotation.Nullable;
 import javax.persistence.*;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
 
 @Table
@@ -9,6 +14,7 @@ import java.util.Objects;
 public final class User {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id", nullable = false, unique = true)
     private Long id;
 
@@ -18,26 +24,42 @@ public final class User {
     @Column(name = "user_password", nullable = false)
     private String password;
 
-    @Column(name = "phone_number", nullable = false, unique = true)
-    private String phoneNumber;
+    @OneToOne
+    @JoinColumn(name = "phone_number_id", nullable = false, unique = true)
+    private PhoneNumber phoneNumber;
 
     @Column(name = "email", unique = true)
     private String email;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "country_id", referencedColumnName = "country_id")
-    private Country country;
+    @OneToMany(fetch=FetchType.EAGER)
+    @JoinTable(name = "is_user_to_item",
+            joinColumns = @JoinColumn(name = "user_id", nullable = false),
+            inverseJoinColumns = @JoinColumn(name = "item_id", nullable = false)
+    )
+    private Collection<Item> items = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "is_user_to_comment",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "comment_id", referencedColumnName = "comment_id")
+    )
+    private Collection<Comment> comments = new HashSet<>();
 
     public User() {
     }
 
-    public User(Long id, String name, String password, String phoneNumber, String email, Country country) {
-        this.id = id;
+    public User(String name, String password, PhoneNumber phoneNumber, String email, Collection<Item> items) {
         this.name = name;
         this.password = password;
         this.phoneNumber = phoneNumber;
         this.email = email;
-        this.country = country;
+        this.items = items;
+    }
+
+    public User(Long id, String name, String password, PhoneNumber phoneNumber, String email, Collection<Item> items) {
+        this(name, password, phoneNumber, email, items);
+        this.id = id;
     }
 
     public Long getId() {
@@ -64,11 +86,11 @@ public final class User {
         this.password = password;
     }
 
-    public String getPhoneNumber() {
+    public PhoneNumber getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
+    public void setPhoneNumber(PhoneNumber phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
@@ -81,13 +103,20 @@ public final class User {
         this.email = email;
     }
 
-    @Nullable
-    public Country getCountry() {
-        return country;
+    public Collection<Item> getItems() {
+        return items;
     }
 
-    public void setCountry(Country country) {
-        this.country = country;
+    public void setItems(Collection<Item> items) {
+        this.items = items;
+    }
+
+    public Collection<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(Collection<Comment> comments) {
+        this.comments = comments;
     }
 
     @Override
@@ -95,17 +124,18 @@ public final class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return id.equals(user.id) &&
-                name.equals(user.name) &&
-                password.equals(user.password) &&
-                phoneNumber.equals(user.phoneNumber) &&
+        return Objects.equals(id, user.id) &&
+                Objects.equals(name, user.name) &&
+                Objects.equals(password, user.password) &&
+                Objects.equals(phoneNumber, user.phoneNumber) &&
                 Objects.equals(email, user.email) &&
-                Objects.equals(country, user.country);
+                Objects.equals(items, user.items) &&
+                Objects.equals(comments, user.comments);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, password, phoneNumber, email, country);
+        return Objects.hash(id, name, password, phoneNumber, email, items, comments);
     }
 
     @Override
@@ -114,9 +144,10 @@ public final class User {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", password='" + password + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
+                ", phoneNumber=" + phoneNumber +
                 ", email='" + email + '\'' +
-                ", country=" + country +
+                ", items=" + items +
+                ", comments=" + comments +
                 '}';
     }
 }

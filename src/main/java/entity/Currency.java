@@ -3,10 +3,7 @@ package entity;
 import constraint.CurrencyConstraint;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Objects;
 
 @Table
@@ -16,6 +13,7 @@ import java.util.Objects;
 public final class Currency {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "currency_id", unique = true, nullable = false)
     private Integer id;
 
