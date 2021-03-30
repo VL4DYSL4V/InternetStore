@@ -1,29 +1,6 @@
 package config;
 
-import formatter.StringToLocalDateFormatter;
-import org.apache.commons.dbcp2.BasicDataSource;
-import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.*;
-import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.format.FormatterRegistry;
-import org.springframework.http.MediaType;
-import org.springframework.web.accept.ContentNegotiationManager;
-import org.springframework.web.servlet.LocaleResolver;
-import org.springframework.web.servlet.ViewResolver;
-import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
-import org.springframework.web.servlet.i18n.SessionLocaleResolver;
-import org.springframework.web.servlet.view.BeanNameViewResolver;
-import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
-import org.springframework.web.servlet.view.InternalResourceViewResolver;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Properties;
 
 @Configuration
 @ComponentScan(value = {"config", "dao", "service"})

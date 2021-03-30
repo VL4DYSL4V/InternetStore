@@ -33,14 +33,14 @@ public final class MySqlCountryDao implements SqlCountryDao {
     @Override
     public Country getById(Integer id) throws FetchException {
         Objects.requireNonNull(id);
-        String sql = "SELECT is_country.country_id, country_name FROM is_country WHERE country_id = ?;";
+        String sql = "SELECT country_name FROM country WHERE country_id = ?;";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, id);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
                     Country country = new Country();
-                    country.setId(resultSet.getInt("country_id"));
+                    country.setId(id);
                     country.setCountryName(resultSet.getString("country_name"));
                     return country;
                 }
@@ -53,7 +53,7 @@ public final class MySqlCountryDao implements SqlCountryDao {
 
     @Override
     public Collection<Country> allEntities() throws FetchException {
-        String fetchCountrySql = "SELECT is_country.country_id, country_name FROM is_country;";
+        String fetchCountrySql = "SELECT country.country_id, country_name FROM country;";
         Collection<Country> out = new LinkedList<>();
         try (Connection connection = dataSource.getConnection();
              PreparedStatement countryPrepStatement = connection.prepareStatement(fetchCountrySql)) {
@@ -73,7 +73,7 @@ public final class MySqlCountryDao implements SqlCountryDao {
     @Override
     public void save(Country country) throws StoreException {
         Objects.requireNonNull(country);
-        String saveCountrySql = "INSERT INTO is_country (country_id, country_name) VALUES (?, ?);";
+        String saveCountrySql = "INSERT INTO country (country_id, country_name) VALUES (?, ?);";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement countryPreparedStatement = connection.prepareStatement(saveCountrySql)) {
             countryPreparedStatement.setInt(1, country.getId());
@@ -87,7 +87,7 @@ public final class MySqlCountryDao implements SqlCountryDao {
     @Override
     public void saveIgnoreId(Country country) throws StoreException {
         Objects.requireNonNull(country);
-        String saveCountrySql = "INSERT INTO is_country (country_name) VALUES (?);";
+        String saveCountrySql = "INSERT INTO country (country_name) VALUES (?);";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement countryPreparedStatement = connection.prepareStatement(saveCountrySql)) {
             countryPreparedStatement.setString(1, country.getCountryName());
@@ -101,7 +101,7 @@ public final class MySqlCountryDao implements SqlCountryDao {
     public void update(Integer id, Country country) throws UpdateException {
         Objects.requireNonNull(id);
         Objects.requireNonNull(country);
-        String updateNameSql = "UPDATE is_country SET country_name = ? WHERE country_id = ?;";
+        String updateNameSql = "UPDATE country SET country_name = ? WHERE country_id = ?;";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement updateNamePreparedStatement = connection.prepareStatement(updateNameSql)) {
             updateNamePreparedStatement.setString(1, country.getCountryName());
@@ -116,7 +116,7 @@ public final class MySqlCountryDao implements SqlCountryDao {
     @Override
     public void delete(Integer id) throws DeleteException {
         Objects.requireNonNull(id);
-        String sql = "DELETE FROM is_country WHERE country_id = ?;";
+        String sql = "DELETE FROM country WHERE country_id = ?;";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, id);
@@ -129,7 +129,7 @@ public final class MySqlCountryDao implements SqlCountryDao {
     @Override
     public Country getByName(String countryName) throws FetchException {
         Objects.requireNonNull(countryName);
-        String sql = "SELECT country_id FROM is_country WHERE BINARY country_name = ?;";
+        String sql = "SELECT country_id FROM country WHERE BINARY country_name = ?;";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement getIdPrepStatement = connection.prepareStatement(sql)) {
             getIdPrepStatement.setString(1, countryName);
@@ -149,7 +149,7 @@ public final class MySqlCountryDao implements SqlCountryDao {
     @Override
     public void deleteByName(String countryName) throws DeleteException {
         Objects.requireNonNull(countryName);
-        String sql = "DELETE FROM is_country WHERE BINARY country_name = ?;";
+        String sql = "DELETE FROM country WHERE BINARY country_name = ?;";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement getIdPrepStatement = connection.prepareStatement(sql)) {
             getIdPrepStatement.setString(1, countryName);
@@ -162,7 +162,7 @@ public final class MySqlCountryDao implements SqlCountryDao {
     @Override
     public void saveAll(Collection<Country> countries) throws StoreException {
         Objects.requireNonNull(countries);
-        String saveCountrySql = "INSERT INTO is_country (country_id, country_name) VALUES (?, ?);";
+        String saveCountrySql = "INSERT INTO country (country_id, country_name) VALUES (?, ?);";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement countryPreparedStatement = connection.prepareStatement(saveCountrySql)) {
             connection.setAutoCommit(false);
@@ -186,7 +186,7 @@ public final class MySqlCountryDao implements SqlCountryDao {
     @Override
     public void saveAllIgnoreId(Collection<Country> countries) throws StoreException {
         Objects.requireNonNull(countries);
-        String saveCountrySql = "INSERT INTO is_country (country_name) VALUES (?);";
+        String saveCountrySql = "INSERT INTO country (country_name) VALUES (?);";
        try (Connection connection = dataSource.getConnection();
             PreparedStatement countryPreparedStatement = connection.prepareStatement(saveCountrySql)) {
             connection.setAutoCommit(false);

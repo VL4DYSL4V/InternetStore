@@ -26,14 +26,9 @@ public final class HibernateCommentDao implements OrmCommentDao {
         try (Session session = HibernateUtils.openSession()) {
             Transaction transaction = session.beginTransaction();
             Query<Comment> query = session
-                    .createSQLQuery("SELECT is_comment.comment_id, is_comment.comment_text, is_comment.time_of_post," +
-                            "       is_user.user_name AS authorName, is_item_to_comment.item_id AS itemId " +
-                            "FROM is_comment INNER JOIN is_user_to_comment " +
-                            "        ON is_user_to_comment.user_id = ? " +
-                            "               AND is_comment.comment_id = is_user_to_comment.comment_id " +
-                            "    INNER JOIN is_user " +
-                            "        ON is_user_to_comment.user_id = is_user.user_id " +
-                            "    INNER JOIN is_item_to_comment ON is_comment.comment_id = is_item_to_comment.comment_id;")
+                    .createSQLQuery("SELECT comment_id, comment_text, time_of_post," +
+                            "       comment.user_id, item.item_id " +
+                            "FROM comment INNER JOIN item USING(item_id) WHERE user_id = ?;")
                     .addEntity(Comment.class);
             query.setParameter(1, userId);
             out = query.list();
@@ -51,15 +46,11 @@ public final class HibernateCommentDao implements OrmCommentDao {
         try (Session session = HibernateUtils.openSession()) {
             Transaction transaction = session.beginTransaction();
             Query<Comment> query = session
-                    .createSQLQuery("SELECT is_comment.comment_id, is_comment.comment_text, is_comment.time_of_post," +
-                            "       is_user.user_name AS authorName, is_item_to_comment.item_id AS itemId " +
-                            "FROM is_comment INNER JOIN is_user_to_comment " +
-                            "        ON is_comment.comment_id = is_user_to_comment.comment_id " +
-                            "    INNER JOIN is_user " +
-                            "        ON is_user_to_comment.user_id = is_user.user_id " +
-                            "    INNER JOIN is_item_to_comment" +
-                            "       ON is_item_to_comment.item_id = ?" +
-                            "            AND is_comment.comment_id = is_item_to_comment.comment_id;")
+                    .createSQLQuery("SELECT comment_id, comment_text, time_of_post," +
+                            "       comment.user_id, item.item_id " +
+                            "FROM comment INNER JOIN item" +
+                            "       ON item.item_id = ?" +
+                            "            AND comment.item_id = item.item_id;")
                     .addEntity(Comment.class);
             query.setParameter(1, itemId);
             out = query.list();

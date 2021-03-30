@@ -1,14 +1,16 @@
 package entity;
 
-import constraint.CurrencyConstraint;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.*;
 import java.util.Objects;
 
 @Table
-@Entity(name = "is_currency")
-@CurrencyConstraint
+@Entity(name = "currency")
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
+
 @NotThreadSafe
 public final class Currency {
 

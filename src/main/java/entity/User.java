@@ -1,8 +1,5 @@
 package entity;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
 import javax.annotation.Nullable;
 import javax.persistence.*;
 import java.util.Collection;
@@ -10,7 +7,7 @@ import java.util.HashSet;
 import java.util.Objects;
 
 @Table
-@Entity(name = "is_user")
+@Entity(name = "a_user")
 public final class User {
 
     @Id
@@ -24,42 +21,28 @@ public final class User {
     @Column(name = "user_password", nullable = false)
     private String password;
 
-    @OneToOne
-    @JoinColumn(name = "phone_number_id", nullable = false, unique = true)
-    private PhoneNumber phoneNumber;
+    @Column(name = "phone_number", nullable = false, unique = true)
+    private String phoneNumber;
 
     @Column(name = "email", unique = true)
     private String email;
 
-    @OneToMany(fetch=FetchType.EAGER)
-    @JoinTable(name = "is_user_to_item",
-            joinColumns = @JoinColumn(name = "user_id", nullable = false),
-            inverseJoinColumns = @JoinColumn(name = "item_id", nullable = false)
-    )
-    private Collection<Item> items = new HashSet<>();
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "userId")
+    Collection<Item> items = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "is_user_to_comment",
-            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "comment_id", referencedColumnName = "comment_id")
-    )
-    private Collection<Comment> comments = new HashSet<>();
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userId")
+    Collection<Comment> comments = new HashSet<>();
 
     public User() {
     }
 
-    public User(String name, String password, PhoneNumber phoneNumber, String email, Collection<Item> items) {
+    public User(String name, String password, String phoneNumber, String email, Collection<Item> items, Collection<Comment> comments) {
         this.name = name;
         this.password = password;
         this.phoneNumber = phoneNumber;
         this.email = email;
         this.items = items;
-    }
-
-    public User(Long id, String name, String password, PhoneNumber phoneNumber, String email, Collection<Item> items) {
-        this(name, password, phoneNumber, email, items);
-        this.id = id;
+        this.comments = comments;
     }
 
     public Long getId() {
@@ -86,11 +69,11 @@ public final class User {
         this.password = password;
     }
 
-    public PhoneNumber getPhoneNumber() {
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(PhoneNumber phoneNumber) {
+    public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
@@ -144,7 +127,7 @@ public final class User {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", password='" + password + '\'' +
-                ", phoneNumber=" + phoneNumber +
+                ", phoneNumber='" + phoneNumber + '\'' +
                 ", email='" + email + '\'' +
                 ", items=" + items +
                 ", comments=" + comments +

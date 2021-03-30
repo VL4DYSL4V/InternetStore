@@ -1,13 +1,13 @@
 package entity;
 
-import org.hibernate.annotations.JoinFormula;
-
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
 
 @Table
-@Entity(name = "is_comment")
+@Entity(name = "comment")
 public final class Comment {
 
     @Id
@@ -19,22 +19,27 @@ public final class Comment {
     private Timestamp timeOfPost;
 
     @Column(name = "comment_text", nullable = false)
-    private String commentTest;
+    private String commentText;
 
-    @JoinFormula("SELECT IF(COUNT(user_name) = 0, NULL, user_name) AS author FROM is_user INNER JOIN is_user_to_comment USING (user_id) INNER JOIN is_comment USING(comment_id)")
-    private String authorName;
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
 
-    @JoinFormula("SELECT IF(COUNT(item_id) = 0, NULL, item_id) AS item_id_value FROM is_item INNER JOIN is_item_to_comment USING (item_id) INNER JOIN is_comment USING(comment_id)")
+    @Column(name="item_id", nullable = false)
     private Long itemId;
+
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = "reply", referencedColumnName = "comment_id")
+    Collection<Comment> replies = new HashSet<>();
 
     public Comment() {
     }
 
-    public Comment(Timestamp timeOfPost, String commentTest, String authorName, Long itemId) {
+    public Comment(Timestamp timeOfPost, String commentText, Long userId, Long itemId, Collection<Comment> replies) {
         this.timeOfPost = timeOfPost;
-        this.commentTest = commentTest;
-        this.authorName = authorName;
+        this.commentText = commentText;
+        this.userId = userId;
         this.itemId = itemId;
+        this.replies = replies;
     }
 
     public Long getId() {
@@ -53,20 +58,20 @@ public final class Comment {
         this.timeOfPost = timeOfPost;
     }
 
-    public String getCommentTest() {
-        return commentTest;
+    public String getCommentText() {
+        return commentText;
     }
 
-    public void setCommentTest(String commentTest) {
-        this.commentTest = commentTest;
+    public void setCommentText(String commentText) {
+        this.commentText = commentText;
     }
 
-    public String getAuthorName() {
-        return authorName;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setAuthorName(String authorName) {
-        this.authorName = authorName;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public Long getItemId() {
@@ -77,6 +82,14 @@ public final class Comment {
         this.itemId = itemId;
     }
 
+    public Collection<Comment> getReplies() {
+        return replies;
+    }
+
+    public void setReplies(Collection<Comment> replies) {
+        this.replies = replies;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -84,14 +97,15 @@ public final class Comment {
         Comment comment = (Comment) o;
         return Objects.equals(id, comment.id) &&
                 Objects.equals(timeOfPost, comment.timeOfPost) &&
-                Objects.equals(commentTest, comment.commentTest) &&
-                Objects.equals(authorName, comment.authorName) &&
-                Objects.equals(itemId, comment.itemId);
+                Objects.equals(commentText, comment.commentText) &&
+                Objects.equals(userId, comment.userId) &&
+                Objects.equals(itemId, comment.itemId) &&
+                Objects.equals(replies, comment.replies);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, timeOfPost, commentTest, authorName, itemId);
+        return Objects.hash(id, timeOfPost, commentText, userId, itemId, replies);
     }
 
     @Override
@@ -99,9 +113,10 @@ public final class Comment {
         return "Comment{" +
                 "id=" + id +
                 ", timeOfPost=" + timeOfPost +
-                ", commentTest='" + commentTest + '\'' +
-                ", authorName='" + authorName + '\'' +
+                ", commentText='" + commentText + '\'' +
+                ", userId=" + userId +
                 ", itemId=" + itemId +
+                ", replies=" + replies +
                 '}';
     }
 }

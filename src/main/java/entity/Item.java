@@ -1,6 +1,5 @@
 package entity;
 
-import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -10,7 +9,7 @@ import java.util.HashSet;
 import java.util.Objects;
 
 @Table
-@Entity(name = "is_item")
+@Entity(name = "item")
 @NotThreadSafe
 public final class Item {
 
@@ -25,8 +24,8 @@ public final class Item {
     @Column(name = "amount", nullable = false)
     private int amount;
 
-    @Column(name = "price_for_one", nullable = false)
-    private BigDecimal priceForOne;
+    @Column(name = "price", nullable = false)
+    private BigDecimal price;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "currency_id", referencedColumnName = "currency_id", nullable = false)
@@ -41,46 +40,17 @@ public final class Item {
     @Column(name = "put_up_for_sale", nullable = false)
     private Date putUpForSale;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "phone_number_id", referencedColumnName = "phone_number_id", nullable = false)
-    private PhoneNumber phoneNumber;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "country_id", unique = false, nullable = true)
-    private Country country;
-
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "is_item_to_comment",
-        joinColumns = @JoinColumn(name = "item_id", referencedColumnName = "item_id"),
-        inverseJoinColumns = @JoinColumn(name = "comment_id", referencedColumnName = "comment_id")
-    )
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "itemId")
     private Collection<Comment> comments = new HashSet<>();
 
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "country_id")
+    private Country country;
+
     public Item() {
-    }
-
-    public Item(String name, int amount,
-                BigDecimal priceForOne, Currency currency,
-                String imageUrl, String itemDescription,
-                Date putUpForSale, PhoneNumber phoneNumber, Country country) {
-        this.name = name;
-        this.amount = amount;
-        this.priceForOne = priceForOne;
-        this.currency = currency;
-        this.imageUrl = imageUrl;
-        this.itemDescription = itemDescription;
-        this.putUpForSale = putUpForSale;
-        this.phoneNumber = phoneNumber;
-        this.country = country;
-    }
-
-    public Item(Long id, String name, int amount,
-                BigDecimal priceForOne, Currency currency,
-                String imageUrl, String itemDescription,
-                Date putUpForSale, PhoneNumber phoneNumber, Country country) {
-        this(name, amount, priceForOne, currency,
-                imageUrl, itemDescription, putUpForSale, phoneNumber, country);
-        this.id = id;
     }
 
     public Long getId() {
@@ -107,12 +77,12 @@ public final class Item {
         this.amount = amount;
     }
 
-    public BigDecimal getPriceForOne() {
-        return priceForOne;
+    public BigDecimal getPrice() {
+        return price;
     }
 
-    public void setPriceForOne(BigDecimal priceForOne) {
-        this.priceForOne = priceForOne;
+    public void setPrice(BigDecimal price) {
+        this.price = price;
     }
 
     public Currency getCurrency() {
@@ -131,7 +101,6 @@ public final class Item {
         this.imageUrl = imageUrl;
     }
 
-    @Nullable
     public String getItemDescription() {
         return itemDescription;
     }
@@ -148,12 +117,20 @@ public final class Item {
         this.putUpForSale = putUpForSale;
     }
 
-    public PhoneNumber getPhoneNumber() {
-        return phoneNumber;
+    public Collection<Comment> getComments() {
+        return comments;
     }
 
-    public void setPhoneNumber(PhoneNumber phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setComments(Collection<Comment> comments) {
+        this.comments = comments;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public Country getCountry() {
@@ -164,14 +141,6 @@ public final class Item {
         this.country = country;
     }
 
-    public Collection<Comment> getComments() {
-        return comments;
-    }
-
-    public void setComments(Collection<Comment> comments) {
-        this.comments = comments;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -180,38 +149,35 @@ public final class Item {
         return amount == item.amount &&
                 Objects.equals(id, item.id) &&
                 Objects.equals(name, item.name) &&
-                Objects.equals(priceForOne, item.priceForOne) &&
+                Objects.equals(price, item.price) &&
                 Objects.equals(currency, item.currency) &&
                 Objects.equals(imageUrl, item.imageUrl) &&
                 Objects.equals(itemDescription, item.itemDescription) &&
                 Objects.equals(putUpForSale, item.putUpForSale) &&
-                Objects.equals(phoneNumber, item.phoneNumber) &&
-                Objects.equals(country, item.country) &&
-                Objects.equals(comments, item.comments);
+                Objects.equals(comments, item.comments) &&
+                Objects.equals(userId, item.userId) &&
+                Objects.equals(country, item.country);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, amount, priceForOne, currency, imageUrl, itemDescription, putUpForSale, phoneNumber, country, comments);
+        return Objects.hash(id, name, amount, price, currency, imageUrl, itemDescription, putUpForSale, comments, userId, country);
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(1000);
-        sb.append("Item{")
-                .append("id=").append(id)
-                .append(", name='").append(name).append('\'')
-                .append(", amount=").append(amount)
-                .append(", priceForOne=").append(priceForOne)
-                .append(",\n currency=").append(currency)
-                .append(", imageUrl='").append(imageUrl).append('\'')
-                .append(",\n itemDescription='").append(itemDescription).append('\'')
-                .append(", putUpForSale=").append(putUpForSale)
-                .append(", phoneNumber=").append(phoneNumber)
-                .append(", country=").append(country)
-                .append(",").append("\n\tcomments={");
-        comments.forEach(comment -> sb.append(comment).append("\n"));
-        sb.setCharAt(sb.length() - 1, '}');
-        return sb.toString();
+        return "Item{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", amount=" + amount +
+                ", price=" + price +
+                ", currency=" + currency +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", itemDescription='" + itemDescription + '\'' +
+                ", putUpForSale=" + putUpForSale +
+                ", comments=" + comments +
+                ", userId=" + userId +
+                ", country=" + country +
+                '}';
     }
 }

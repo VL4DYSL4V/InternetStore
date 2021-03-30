@@ -9,7 +9,6 @@ import exception.dao.UpdateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -33,15 +32,14 @@ public final class MySqlCurrencyDao implements SqlCurrencyDao {
     @Override
     public Currency getById(Integer id) throws FetchException {
         Objects.requireNonNull(id);
-        String sql = "SELECT currency_id, currency_name FROM is_currency WHERE currency_id = ?;";
+        String sql = "SELECT currency_name FROM currency WHERE currency_id = ?;";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, id);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
-                    int currency_id = resultSet.getInt("currency_id");
                     String currency_name = resultSet.getString("currency_name");
-                    return new Currency(currency_id, currency_name);
+                    return new Currency(id, currency_name);
                 }
                 throw new FetchException("No such currency with id = " + id);
             }
@@ -52,7 +50,7 @@ public final class MySqlCurrencyDao implements SqlCurrencyDao {
 
     @Override
     public Collection<Currency> allEntities() throws FetchException {
-        String sql = "SELECT currency_id, currency_name FROM is_currency;";
+        String sql = "SELECT currency_id, currency_name FROM currency;";
         Collection<Currency> out = new HashSet<>();
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -72,7 +70,7 @@ public final class MySqlCurrencyDao implements SqlCurrencyDao {
     @Override
     public void save(Currency currency) throws StoreException {
         Objects.requireNonNull(currency);
-        String sql = "INSERT INTO is_currency(currency_id, currency_name) VALUES(?, ?);";
+        String sql = "INSERT INTO currency(currency_id, currency_name) VALUES(?, ?);";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, currency.getId());
@@ -86,7 +84,7 @@ public final class MySqlCurrencyDao implements SqlCurrencyDao {
     @Override
     public void saveIgnoreId(Currency currency) throws StoreException {
         Objects.requireNonNull(currency);
-        String sql = "INSERT INTO is_currency(currency_name) VALUES(?);";
+        String sql = "INSERT INTO currency(currency_name) VALUES(?);";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, currency.getCurrencyName());
@@ -100,7 +98,7 @@ public final class MySqlCurrencyDao implements SqlCurrencyDao {
     public void update(Integer id, Currency currency) throws UpdateException {
         Objects.requireNonNull(id);
         Objects.requireNonNull(currency);
-        String sql = "UPDATE is_currency SET currency_name = ? WHERE currency_id = ?;";
+        String sql = "UPDATE currency SET currency_name = ? WHERE currency_id = ?;";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, currency.getCurrencyName());
@@ -114,7 +112,7 @@ public final class MySqlCurrencyDao implements SqlCurrencyDao {
     @Override
     public void delete(Integer id) throws DeleteException {
         Objects.requireNonNull(id);
-        String sql = "DELETE FROM is_currency WHERE currency_id = ?;";
+        String sql = "DELETE FROM currency WHERE currency_id = ?;";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, id);
@@ -127,7 +125,7 @@ public final class MySqlCurrencyDao implements SqlCurrencyDao {
     @Override
     public Currency getByName(String name) throws FetchException {
         Objects.requireNonNull(name);
-        String sql = "SELECT currency_id FROM is_currency WHERE BINARY currency_name = ?;";
+        String sql = "SELECT currency_id FROM currency WHERE BINARY currency_name = ?;";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, name);
@@ -145,7 +143,7 @@ public final class MySqlCurrencyDao implements SqlCurrencyDao {
     @Override
     public void deleteByName(String name) throws DeleteException {
         Objects.requireNonNull(name);
-        String sql = "DELETE FROM is_currency WHERE BINARY currency_name = ?;";
+        String sql = "DELETE FROM currency WHERE BINARY currency_name = ?;";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, name);
@@ -158,7 +156,7 @@ public final class MySqlCurrencyDao implements SqlCurrencyDao {
     @Override
     public void saveAll(Collection<Currency> currencies) throws StoreException {
         Objects.requireNonNull(currencies);
-        String sql = "INSERT INTO is_currency(currency_id, currency_name) VALUES(?, ?);";
+        String sql = "INSERT INTO currency(currency_id, currency_name) VALUES(?, ?);";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             connection.setAutoCommit(false);
@@ -182,7 +180,7 @@ public final class MySqlCurrencyDao implements SqlCurrencyDao {
     @Override
     public void saveAllIgnoreId(Collection<Currency> currencies) throws StoreException {
         Objects.requireNonNull(currencies);
-        String sql = "INSERT INTO is_currency(currency_name) VALUES(?);";
+        String sql = "INSERT INTO currency(currency_name) VALUES(?);";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             connection.setAutoCommit(false);

@@ -1,4 +1,4 @@
-package formatter;
+package converter;
 
 import org.springframework.core.convert.converter.Converter;
 
@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 
-public final class StringToLocalDateFormatter implements Converter<String, LocalDate> {
+public final class StringToLocalDateConverter implements Converter<String, LocalDate> {
 
     private static final DateTimeFormatter formatter = new DateTimeFormatterBuilder()
             .appendOptional( DateTimeFormatter.ofPattern( "yyyy-MM-dd" ) )

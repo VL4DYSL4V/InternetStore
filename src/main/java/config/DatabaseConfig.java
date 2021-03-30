@@ -3,7 +3,6 @@ package config;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,7 +12,6 @@ import java.util.Properties;
 public class DatabaseConfig {
 
     @Bean(name = "dataSource")
-    @Scope("singleton")
     public BasicDataSource basicDataSource(){
         BasicDataSource basicDataSource = new BasicDataSource();
         try {
@@ -31,7 +29,8 @@ public class DatabaseConfig {
 
     private Properties databaseProperties() throws IOException {
         Properties out = new Properties();
-        try(InputStream inputStream = DatabaseConfig.class.getResourceAsStream("/data_base_properties.properties");){
+        try(InputStream inputStream =
+                    DatabaseConfig.class.getResourceAsStream("/data_base_properties.properties")){
             out.load(inputStream);
         }
         return out;
