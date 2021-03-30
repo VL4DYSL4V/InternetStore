@@ -1,6 +1,5 @@
-package dao.orm.hibernate.currency;
+package dao.currency;
 
-import dao.orm.OrmCurrencyDao;
 import entity.Currency;
 import exception.dao.DeleteException;
 import exception.dao.FetchException;
@@ -16,8 +15,8 @@ import org.springframework.stereotype.Repository;
 import java.util.Collection;
 import java.util.Objects;
 
-@Repository("hibernateCurrencyDao")
-public final class HibernateCurrencyDao implements OrmCurrencyDao {
+@Repository("currencyDao")
+public final class HibernateCurrencyDao implements CurrencyDao {
 
     @Override
     public Currency getById(Integer id) throws FetchException {

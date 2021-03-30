@@ -1,6 +1,6 @@
 package filler;
 
-import dao.orm.OrmUserDao;
+import dao.user.UserDao;
 import entity.User;
 import exception.dao.StoreException;
 
@@ -13,13 +13,13 @@ public final class UserTestDataFiller {
     private static final List<Character> allowedCharacters = allowedCharacters();
     private static final List<String> operatorDigits = Arrays.asList("097", "095", "066", "037", "050", "044");
     private static final List<String> emailDomains = allowedEmailDomains();
-    private final OrmUserDao userDao;
+    private final UserDao userDao;
 
-    public UserTestDataFiller(OrmUserDao userDao) {
+    public UserTestDataFiller(UserDao userDao) {
         this.userDao = userDao;
     }
 
-    private static List<Character> allowedCharacters(){
+    private static List<Character> allowedCharacters() {
         String allowed = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_";
         char[] allowedChars = allowed.toCharArray();
         int[] codes = new int[allowedChars.length];
@@ -31,7 +31,7 @@ public final class UserTestDataFiller {
                 .collect(Collectors.toList());
     }
 
-    private static List<String> allowedEmailDomains(){
+    private static List<String> allowedEmailDomains() {
         return Arrays.asList("gmail.com", "ukr.net", "hotmail.com", "knu.edu", "live.com", "mail.ru");
     }
 
@@ -48,7 +48,7 @@ public final class UserTestDataFiller {
         for (int i = 0; i < amount; i++) {
             User u = new User();
             String name = randomName(random.nextInt(21) + 4, random);
-            while(nameExists(out, name)){
+            while (nameExists(out, name)) {
                 name = randomName(random.nextInt(25), random);
             }
             String email = name.concat("@")
@@ -60,7 +60,7 @@ public final class UserTestDataFiller {
             u.setPassword(UUID.randomUUID().toString());
             u.setItems(new ArrayList<>());
             String phoneNumber = randomPhoneNumber(random);
-            while (phoneNumberExists(out, phoneNumber)){
+            while (phoneNumberExists(out, phoneNumber)) {
                 phoneNumber = randomPhoneNumber(random);
             }
             u.setPhoneNumber(phoneNumber);
@@ -69,20 +69,20 @@ public final class UserTestDataFiller {
         return out;
     }
 
-    private boolean phoneNumberExists(Collection<User> users, String phoneNumber){
+    private boolean phoneNumberExists(Collection<User> users, String phoneNumber) {
         return users.stream().map(User::getPhoneNumber).anyMatch(n -> Objects.equals(phoneNumber, n));
     }
 
-    private static String randomPhoneNumber(Random random){
+    private static String randomPhoneNumber(Random random) {
         StringBuilder out = new StringBuilder(10);
         out.append(operatorDigits.get(random.nextInt(operatorDigits.size())));
-        while(out.length() < 10){
+        while (out.length() < 10) {
             out.append(random.nextInt(10));
         }
         return out.toString();
     }
 
-    private boolean nameExists(Collection<User> users, String name){
+    private boolean nameExists(Collection<User> users, String name) {
         return users.stream().map(User::getName).anyMatch(n -> Objects.equals(name, n));
     }
 

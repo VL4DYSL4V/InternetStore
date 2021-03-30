@@ -1,6 +1,5 @@
-package dao.orm.hibernate.comment;
+package dao.comment;
 
-import dao.orm.OrmCommentDao;
 import entity.Comment;
 import exception.dao.DeleteException;
 import exception.dao.FetchException;
@@ -16,11 +15,11 @@ import org.springframework.stereotype.Repository;
 import java.util.Collection;
 import java.util.Objects;
 
-@Repository("hibernateCommentDao")
-public final class HibernateCommentDao implements OrmCommentDao {
+@Repository("commentDao")
+public final class HibernateCommentDao implements CommentDao {
 
     @Override
-    public Collection<Comment> commentsWithUserId(Long userId) throws FetchException{
+    public Collection<Comment> commentsWithUserId(Long userId) throws FetchException {
         Objects.requireNonNull(userId);
         Collection<Comment> out;
         try (Session session = HibernateUtils.openSession()) {
@@ -40,7 +39,7 @@ public final class HibernateCommentDao implements OrmCommentDao {
     }
 
     @Override
-    public Collection<Comment> commentsWithItemId(Long itemId) throws FetchException{
+    public Collection<Comment> commentsWithItemId(Long itemId) throws FetchException {
         Objects.requireNonNull(itemId);
         Collection<Comment> out;
         try (Session session = HibernateUtils.openSession()) {

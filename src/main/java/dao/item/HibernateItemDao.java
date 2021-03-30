@@ -1,6 +1,5 @@
-package dao.orm.hibernate.item;
+package dao.item;
 
-import dao.orm.OrmItemDao;
 import dao.utils.SimilarNameCreator;
 import entity.Item;
 import exception.dao.DeleteException;
@@ -18,8 +17,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Objects;
 
-@Repository("hibernateItemDao")
-public final class HibernateItemDao implements OrmItemDao {
+@Repository("itemDao")
+public final class HibernateItemDao implements ItemDao {
 
     @Override
     public Item getById(Long id) throws FetchException {

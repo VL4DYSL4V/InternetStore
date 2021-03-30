@@ -1,6 +1,5 @@
-package dao.orm.hibernate.country;
+package dao.country;
 
-import dao.orm.OrmCountryDao;
 import entity.Country;
 import exception.dao.DeleteException;
 import exception.dao.FetchException;
@@ -16,8 +15,8 @@ import org.springframework.stereotype.Repository;
 import java.util.Collection;
 import java.util.Objects;
 
-@Repository("hibernateCountryDao")
-public final class HibernateCountryDao implements OrmCountryDao {
+@Repository("countryDao")
+public final class HibernateCountryDao implements CountryDao {
 
     @Override
     public Country getById(Integer id) throws FetchException {

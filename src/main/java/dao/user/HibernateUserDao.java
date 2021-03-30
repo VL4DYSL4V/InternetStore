@@ -1,7 +1,6 @@
-package dao.orm.hibernate.user;
+package dao.user;
 
-import dao.orm.OrmCommentDao;
-import dao.orm.OrmUserDao;
+import dao.comment.CommentDao;
 import entity.Comment;
 import entity.User;
 import exception.dao.DeleteException;
@@ -21,13 +20,13 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 
-@Repository("hibernateUserDao")
-public class HibernateUserDao implements OrmUserDao {
+@Repository("userDao")
+public class HibernateUserDao implements UserDao {
 
-    private final OrmCommentDao ormCommentDao;
+    private final CommentDao ormCommentDao;
 
     @Autowired
-    public HibernateUserDao(@Qualifier("hibernateCommentDao") OrmCommentDao ormCommentDao) {
+    public HibernateUserDao(@Qualifier("commentDao") CommentDao ormCommentDao) {
         this.ormCommentDao = ormCommentDao;
     }
 

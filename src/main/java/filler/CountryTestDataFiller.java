@@ -1,6 +1,6 @@
 package filler;
 
-import dao.orm.OrmCountryDao;
+import dao.country.CountryDao;
 import entity.Country;
 import exception.dao.StoreException;
 
@@ -9,9 +9,9 @@ import java.util.HashSet;
 
 public final class CountryTestDataFiller {
 
-    private final OrmCountryDao countryDao;
+    private final CountryDao countryDao;
 
-    public CountryTestDataFiller(OrmCountryDao countryDao) {
+    public CountryTestDataFiller(CountryDao countryDao) {
         this.countryDao = countryDao;
     }
 

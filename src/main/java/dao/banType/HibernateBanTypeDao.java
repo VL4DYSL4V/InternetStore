@@ -1,6 +1,5 @@
-package dao.orm.hibernate.banType;
+package dao.banType;
 
-import dao.orm.OrmBanTypeDao;
 import entity.BanType;
 import exception.dao.DeleteException;
 import exception.dao.FetchException;
@@ -15,19 +14,19 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Objects;
 
-@Repository("hibernateBanTypeDao")
-public final class HibernateBanTypeDao implements OrmBanTypeDao {
+@Repository("banTypeDao")
+public final class HibernateBanTypeDao implements BanTypeDao {
 
     @Override
     @Nullable
     public BanType getById(Long id) throws FetchException {
         Objects.requireNonNull(id);
         BanType out;
-        try(Session session = HibernateUtils.openSession()){
+        try (Session session = HibernateUtils.openSession()) {
             Transaction transaction = session.beginTransaction();
             out = session.get(BanType.class, id);
             transaction.commit();
-        }catch (Throwable t){
+        } catch (Throwable t) {
             throw new FetchException(t);
         }
         return out;

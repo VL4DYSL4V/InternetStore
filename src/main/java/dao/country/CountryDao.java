@@ -1,5 +1,6 @@
-package dao;
+package dao.country;
 
+import dao.CrudDao;
 import entity.Country;
 import exception.dao.DeleteException;
 import exception.dao.FetchException;

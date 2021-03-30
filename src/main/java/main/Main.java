@@ -1,46 +1,19 @@
 package main;
 
 import config.InternetStoreConfiguration;
-import dao.orm.OrmCountryDao;
-import dao.orm.OrmCurrencyDao;
-import dao.orm.OrmUserDao;
-import dao.orm.hibernate.user.HibernateUserDao;
-import entity.Country;
-import entity.Currency;
-import entity.User;
-import filler.UserTestDataFiller;
+import dao.user.HibernateUserDao;
+import dao.user.UserDao;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-
-import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
 
 public class Main {
 
     public static void main(String[] args) throws Exception {
         ApplicationContext applicationContext =
                 new AnnotationConfigApplicationContext(InternetStoreConfiguration.class);
-//        OrmCurrencyDao hibCurrencyDao =
-//                applicationContext.getBean("hibernateCurrencyDao", HibernateCurrencyDao.class);
-//        OrmCountryDao hibCountryDao =
-//                applicationContext.getBean("hibernateCountryDao", HibernateCountryDao.class);
-//        OrmItemDao hibItemDao =
-//                applicationContext.getBean("hibernateItemDao", HibernateItemDao.class);
-          OrmUserDao hibUserDao =
-                applicationContext.getBean("hibernateUserDao", HibernateUserDao.class);
-//        OrmCommentDao hibCommentDao =
-//                applicationContext.getBean("hibernateCommentDao", HibernateCommentDao.class);
+        UserDao hibUserDao =
+                applicationContext.getBean("userDao", HibernateUserDao.class);
 
-//        try(Session session = HibernateUtils.openSession()){
-//            Transaction transaction = session.beginTransaction();
-//            User user = session.get(User.class, 1L);
-//            System.out.println(user);
-//            transaction.commit();
-//        }
-
-//        UserTestDataFiller userTestDataFiller = new UserTestDataFiller(hibUserDao);
-//        userTestDataFiller.fillTable();
         System.exit(0);
 
     }

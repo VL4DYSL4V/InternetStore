@@ -1,5 +1,6 @@
-package dao;
+package dao.comment;
 
+import dao.CrudDao;
 import entity.Comment;
 import exception.dao.FetchException;
 

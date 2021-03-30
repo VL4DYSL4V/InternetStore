@@ -5,7 +5,6 @@ import org.springframework.context.annotation.*;
 @Configuration
 @ComponentScan(value = {"config", "dao", "service"})
 //@EnableWebMvc
-@EnableAspectJAutoProxy
 @Import(value = {
         DatabaseConfig.class,
         SecurityConfig.class

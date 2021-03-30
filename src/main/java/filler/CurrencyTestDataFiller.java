@@ -1,6 +1,6 @@
 package filler;
 
-import dao.orm.OrmCurrencyDao;
+import dao.currency.CurrencyDao;
 import entity.Currency;
 import exception.dao.StoreException;
 
@@ -9,13 +9,13 @@ import java.util.HashSet;
 
 public final class CurrencyTestDataFiller {
 
-    private final OrmCurrencyDao currencyDao;
+    private final CurrencyDao currencyDao;
 
-    public CurrencyTestDataFiller(OrmCurrencyDao currencyDao) {
+    public CurrencyTestDataFiller(CurrencyDao currencyDao) {
         this.currencyDao = currencyDao;
     }
 
-    public void fillTable() throws StoreException{
+    public void fillTable() throws StoreException {
         currencyDao.saveAll(testCurrencies());
     }
 

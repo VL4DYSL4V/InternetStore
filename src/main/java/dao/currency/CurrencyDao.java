@@ -1,5 +1,6 @@
-package dao;
+package dao.currency;
 
+import dao.CrudDao;
 import entity.Currency;
 import exception.dao.DeleteException;
 import exception.dao.FetchException;
