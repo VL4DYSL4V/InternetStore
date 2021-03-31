@@ -30,7 +30,7 @@ public class DatabaseConfig {
     private Properties databaseProperties() throws IOException {
         Properties out = new Properties();
         try(InputStream inputStream =
-                    DatabaseConfig.class.getResourceAsStream("/data_base_properties.properties")){
+                    DatabaseConfig.class.getResourceAsStream("/database.properties")){
             out.load(inputStream);
         }
         return out;

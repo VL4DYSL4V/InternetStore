@@ -1,12 +1,14 @@
 package validation;
 
 import dto.BanForm;
+import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+@Component
 public final class BanFormValidator implements Validator {
 
     @Override

@@ -1,21 +1,14 @@
 package validation.text;
 
-import org.springframework.validation.Errors;
+import org.springframework.stereotype.Component;
 
-import java.util.Objects;
-
-public class HtmlInsertionChecker implements TextValidator {
+@Component
+public final class HtmlInsertionChecker implements TextValidator {
 
     //    private static final Pattern HTML_PATTERN = Pattern.compile("");
 
     @Override
-    public boolean supports(Class<?> aClass) {
-        return Objects.equals(aClass, String.class);
-    }
-
-    @Override
-    public void validate(Object o, Errors errors) {
+    public void validate(String s, Runnable rejectionAction) {
 
     }
-
 }

@@ -1,12 +1,14 @@
 package validation;
 
 import dto.UserForm;
+import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import java.util.Objects;
 import java.util.regex.Pattern;
 
+@Component
 public final class UserFormValidator implements Validator {
 
     private static final Pattern USER_NAME_PATTERN =

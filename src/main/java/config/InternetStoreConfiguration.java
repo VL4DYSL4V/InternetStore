@@ -3,7 +3,7 @@ package config;
 import org.springframework.context.annotation.*;
 
 @Configuration
-@ComponentScan(value = {"config", "dao", "service"})
+@ComponentScan(value = {"config", "dao", "service", "validation"})
 //@EnableWebMvc
 @Import(value = {
         DatabaseConfig.class,

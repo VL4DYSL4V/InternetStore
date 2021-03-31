@@ -1,6 +1,7 @@
 package validation.text;
 
-import org.springframework.validation.Validator;
+public interface TextValidator{
 
-public interface TextValidator extends Validator {
+    void validate(String s, Runnable rejectionAction);
+
 }

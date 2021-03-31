@@ -1,6 +1,7 @@
 package validation;
 
 import dto.CommentForm;
+import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import validation.text.TextValidator;
@@ -9,13 +10,16 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
+@Component
 public final class CommentFormValidator implements Validator {
 
     private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s+");
-    private final TextValidator htmlInsertionValidator;
+    private final TextValidator htmlInsertionChecker;
+    private final TextValidator jsInsertionChecker;
 
-    public CommentFormValidator(TextValidator htmlInsertionValidator) {
-        this.htmlInsertionValidator = htmlInsertionValidator;
+    public CommentFormValidator(TextValidator htmlInsertionChecker, TextValidator jsInsertionChecker) {
+        this.htmlInsertionChecker = htmlInsertionChecker;
+        this.jsInsertionChecker = jsInsertionChecker;
     }
 
     @Override
@@ -27,6 +31,10 @@ public final class CommentFormValidator implements Validator {
     public void validate(Object o, Errors errors) {
         if(o instanceof CommentForm){
             CommentForm commentForm = (CommentForm) o;
+            checkUserId(commentForm.getUserId(), errors);
+            checkCommentText(commentForm.getCommentText(), errors);
+            checkItemId(commentForm.getItemId(), errors);
+            checkTimeOfPost(commentForm.getTimeOfPost(), errors);
         }
     }
 
@@ -56,6 +64,7 @@ public final class CommentFormValidator implements Validator {
         if(WHITESPACE_PATTERN.matcher(commentText).matches()){
             errors.rejectValue("commentText", "Comment text must not consist of whitespaces");
         }
-        htmlInsertionValidator.validate(commentText, errors);
+        htmlInsertionChecker.validate(commentText, () -> errors.rejectValue("commentText", "Malicious comment text"));
+        jsInsertionChecker.validate(commentText, () -> errors.rejectValue("commentText", "Malicious comment text"));
     }
 }

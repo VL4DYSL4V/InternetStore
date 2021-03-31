@@ -1,8 +1,10 @@
 package validation;
 
 import dto.ItemForm;
+import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
+import validation.text.TextValidator;
 
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
@@ -11,7 +13,8 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-public class ItemFormValidator implements Validator {
+@Component
+public final class ItemFormValidator implements Validator {
 
     private static final Pattern ITEM_NAME_PATTERN = Pattern.compile("^[a-zA-Z]([a-zA-Z0-9]|[ ]|[-#@№%&*().,'\"]){2,}");
 
@@ -20,6 +23,14 @@ public class ItemFormValidator implements Validator {
     private static final int MAX_PRICE_INTEGER_PART_LENGTH = 11;
     private static final int PRICE_FRACTIONAL_PART_LENGTH = 2;
     private static final int MAX_IMG_URL_LENGTH = 255;
+
+    private final TextValidator htmlInsertionChecker;
+    private final TextValidator jsInsertionChecker;
+
+    public ItemFormValidator(TextValidator htmlInsertionChecker, TextValidator jsInsertionChecker) {
+        this.htmlInsertionChecker = htmlInsertionChecker;
+        this.jsInsertionChecker = jsInsertionChecker;
+    }
 
     @Override
     public boolean supports(Class<?> aClass) {
@@ -50,6 +61,8 @@ public class ItemFormValidator implements Validator {
         } else if (!ITEM_NAME_PATTERN.matcher(name).matches()) {
             errors.rejectValue("name", "Invalid name");
         }
+        htmlInsertionChecker.validate(name, () -> errors.rejectValue("name", "Malicious name"));
+        jsInsertionChecker.validate(name, () -> errors.rejectValue("name", "Malicious name"));
     }
 
     private void checkAmount(int amount, Errors errors) {
@@ -97,7 +110,8 @@ public class ItemFormValidator implements Validator {
     }
 
     private void checkDescription(String description, Errors errors){
-
+        htmlInsertionChecker.validate(description, () -> errors.rejectValue("itemDescription", "Malicious description"));
+        jsInsertionChecker.validate(description, () -> errors.rejectValue("itemDescription", "Malicious description"));
     }
 
     private void checkPutUpForSale(LocalDateTime putUpForSale, Errors errors){

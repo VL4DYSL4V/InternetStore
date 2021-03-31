@@ -1,12 +1,14 @@
 package validation;
 
 import dto.CurrencyForm;
+import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import java.util.Objects;
 import java.util.regex.Pattern;
 
+@Component
 public final class CurrencyFormValidator implements Validator {
 
     private static final Pattern CURRENCY_NAME_PATTERN = Pattern.compile("[A-Z]");
