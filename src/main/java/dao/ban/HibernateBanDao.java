@@ -1,6 +1,6 @@
-package dao.banType;
+package dao.ban;
 
-import entity.BanType;
+import entity.Ban;
 import exception.dao.DeleteException;
 import exception.dao.FetchException;
 import exception.dao.StoreException;
@@ -15,43 +15,43 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Objects;
 
-@Repository("banTypeDao")
-public final class HibernateBanTypeDao implements BanTypeDao {
+@Repository("banDao")
+public final class HibernateBanDao implements BanDao {
 
     @Override
     @Nullable
-    public BanType getById(Integer id) throws FetchException {
-        Objects.requireNonNull(id);
-        BanType out;
+    public Ban getById(Long id) throws FetchException {
+        Ban out;
         try (Session session = HibernateUtils.openSession()) {
             Transaction transaction = session.beginTransaction();
-            out = session.get(BanType.class, id);
+            out = session.get(Ban.class, id);
             transaction.commit();
-        } catch (Throwable t) {
-            throw new FetchException(t);
+        } catch (Throwable e) {
+            throw new FetchException(e);
         }
         return out;
     }
 
     @Override
-    public Collection<BanType> allEntities() throws FetchException {
-        Collection<BanType> banTypes;
+    public Collection<Ban> allEntities() throws FetchException {
+        Collection<Ban> out;
         try (Session session = HibernateUtils.openSession()) {
             Transaction transaction = session.beginTransaction();
-            banTypes = session.createQuery("SELECT banType FROM entity.BanType banType", BanType.class).list();
+            Query<Ban> query = session.createQuery("SELECT b FROM entity.Ban b", Ban.class);
+            out = query.list();
             transaction.commit();
         } catch (Throwable throwable) {
             throw new FetchException(throwable);
         }
-        return banTypes;
+        return out;
     }
 
     @Override
-    public void save(BanType banType) throws StoreException {
-        Objects.requireNonNull(banType);
+    public void save(Ban ban) throws StoreException {
+        Objects.requireNonNull(ban);
         try (Session session = HibernateUtils.openSession()) {
             Transaction transaction = session.beginTransaction();
-            session.save(banType);
+            session.save(ban);
             transaction.commit();
         } catch (Throwable t) {
             throw new StoreException(t);
@@ -59,28 +59,28 @@ public final class HibernateBanTypeDao implements BanTypeDao {
     }
 
     @Override
-    public void update(Integer id, BanType banType) throws UpdateException {
-        Objects.requireNonNull(banType);
+    public void update(Long id, Ban ban) throws UpdateException {
         Objects.requireNonNull(id);
-        Integer oldId = banType.getId();
-        banType.setId(id);
+        Objects.requireNonNull(ban);
+        Long oldId = ban.getId();
+        ban.setId(id);
         try (Session session = HibernateUtils.openSession()) {
             Transaction transaction = session.beginTransaction();
-            session.update(banType);
+            session.update(ban);
             transaction.commit();
-        } catch (Throwable t) {
-            throw new UpdateException(t);
+        } catch (Throwable throwable) {
+            throw new UpdateException(throwable);
         } finally {
-            banType.setId(oldId);
+            ban.setId(oldId);
         }
     }
 
     @Override
-    public void delete(Integer id) throws DeleteException {
+    public void delete(Long id) throws DeleteException {
         Objects.requireNonNull(id);
         try (Session session = HibernateUtils.openSession()) {
             Transaction transaction = session.beginTransaction();
-            Query<?> query = session.createQuery("DELETE FROM entity.BanType bt WHERE bt.id = :id", BanType.class);
+            Query<?> query = session.createQuery("DELETE FROM entity.Ban b WHERE b.id = :id", Ban.class);
             query.setParameter("id", id);
             query.executeUpdate();
             transaction.commit();
