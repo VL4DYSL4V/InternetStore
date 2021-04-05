@@ -3,21 +3,21 @@
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <style>
-    <%@include file="../css/commonStyle.css"%>
-    <%@include file="../css/background.css"%>
+    <%@include file="../../css/commonStyle.css"%>
+    <%@include file="../../css/background.css"%>
 </style>
 
 <html class="blackBcg whiteFont">
 <head>
-    <title><spring:message code="editCountry.title" text="Edit country"/></title>
+    <title><spring:message code="country.view.edit.title" text="Edit country"/></title>
 </head>
 <body>
 <div>
     <center>
-        <form:form method="post" modelAttribute="creationCountryForm" cssClass="form">
+        <form:form method="post" modelAttribute="countryForm" cssClass="form centered">
             <div class="formRow">
                 <div class="formCell">
-                    <spring:message code="countryName" text="Name"/>
+                    <spring:message code="country.name" text="Name"/>
                 </div>
                 <div class="formCell">
                     <form:input path="countryName"/>
@@ -28,7 +28,9 @@
             </div>
             <div class="formRow">
                 <div class="formCell">
-                    <input type="submit" value="Create" class="standardButton">
+                    <input type="submit"
+                           value="<spring:message code="country.view.edit.editButton" text="Update"/>"
+                           class="standardButton">
                 </div>
             </div>
         </form:form>

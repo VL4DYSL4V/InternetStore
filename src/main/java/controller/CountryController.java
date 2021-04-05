@@ -48,13 +48,13 @@ public final class CountryController {
             e.printStackTrace();
         }
         model.addAttribute("countries", countries);
-        return "allCountries";
+        return "country/allCountries";
     }
 
     @GetMapping("/new")
     public String createCountry(Model model) {
         model.addAttribute("creationCountryForm", new CountryForm());
-        return "createCountry";
+        return "country/createCountry";
     }
 
     @PostMapping("/new")
@@ -63,7 +63,7 @@ public final class CountryController {
             BindingResult bindingResult,
             SessionStatus sessionStatus) {
         if (bindingResult.hasErrors()) {
-            return "createCountry";
+            return "country/createCountry";
         }
         Country country = new Country(countryForm.getCountryName());
         try {
@@ -79,17 +79,19 @@ public final class CountryController {
     public String getCountry(@PathVariable("id") Integer id, Model model) {
         try {
             Country country = countryDao.getById(id);
-            model.addAttribute("country", country);
+            CountryForm countryForm = new CountryForm(country.getId(), country.getCountryName());
+            model.addAttribute("countryForm", countryForm);
         } catch (FetchException e) {
             e.printStackTrace();
         }
-        return "jsonTemplate";
+        return "country/country";
     }
 
     @PostMapping("/{id}/delete")
-    public String deleteCountry(@PathVariable("id") Integer id) {
+    public String deleteCountry(@PathVariable("id") Integer id, SessionStatus sessionStatus) {
         try {
             countryDao.delete(id);
+            sessionStatus.setComplete();
         } catch (DeleteException e) {
             e.printStackTrace();
         }
@@ -105,7 +107,7 @@ public final class CountryController {
         } catch (FetchException e) {
             e.printStackTrace();
         }
-        return "editCountry";
+        return "country/editCountry";
     }
 
     @PostMapping("/{id}/edit")
@@ -115,7 +117,7 @@ public final class CountryController {
             SessionStatus sessionStatus,
             @PathVariable("id") Integer id) {
         if (bindingResult.hasErrors()) {
-            return "editCountry";
+            return "country/editCountry";
         }
         Country country = new Country(id, countryForm.getCountryName());
         try {

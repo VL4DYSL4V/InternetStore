@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 @Component
 public final class CurrencyFormValidator implements Validator {
 
-    private static final Pattern CURRENCY_NAME_PATTERN = Pattern.compile("[A-Z]");
+    private static final Pattern CURRENCY_NAME_PATTERN = Pattern.compile("[A-Z]{3}");
     private static final int NAME_LENGTH = 3;
 
     @Override
@@ -25,9 +25,9 @@ public final class CurrencyFormValidator implements Validator {
             CurrencyForm currencyForm = (CurrencyForm) o;
             String currencyName = currencyForm.getCurrencyName();
             if(currencyName.length() != NAME_LENGTH){
-                errors.rejectValue("currencyName", "wrongCurrencyNameLength", "Name length must be 3");
+                errors.rejectValue("currencyName", "currency.validation.name.invalidLength", "Name length must be 3");
             } else if(! CURRENCY_NAME_PATTERN.matcher(currencyName).matches()){
-                errors.rejectValue("currencyName", "invalidCurrencyName", "Invalid name");
+                errors.rejectValue("currencyName", "currency.validation.name.invalid", "Invalid name");
             }
         }
 

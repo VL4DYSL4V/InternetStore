@@ -30,11 +30,11 @@ public final class CountryFormValidator implements Validator {
             CountryForm countryForm = (CountryForm) o;
             String countryName = countryForm.getCountryName();
             if (countryName.length() < MIN_NAME_LENGTH) {
-                errors.rejectValue("countryName", "tooShortCountryName", "Name is too short");
+                errors.rejectValue("countryName", "country.validation.name.tooShort", "Name is too short");
             } else if (countryName.length() > MAX_NAME_LENGTH) {
-                errors.rejectValue("countryName", "tooLongCountryName", "Name is too long");
+                errors.rejectValue("countryName", "country.validation.name.tooLong", "Name is too long");
             } else if (!COUNTRY_NAME_PATTERN.matcher(countryName).matches()) {
-                errors.rejectValue("countryName", "invalidCountryName", "Invalid name");
+                errors.rejectValue("countryName", "country.validation.name.invalid", "Invalid name");
             }
         }
     }

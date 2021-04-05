@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
-public class SimilarNameCreator {
+public final class SimilarNameCreator {
+
+    private SimilarNameCreator(){}
 
     public static Collection<String> createSimilarStrings(String s) {
         Objects.requireNonNull(s);

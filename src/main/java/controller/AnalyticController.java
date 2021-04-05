@@ -18,7 +18,7 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("/analytic")
-public class AnalyticController {
+public final class AnalyticController {
 
     private final AnalyticDAO analyticDAO;
     private final Converter<String, LocalDate> stringLocalDateConverter;

@@ -4,12 +4,15 @@ import java.util.Objects;
 
 public final class CurrencyForm {
 
+    private Integer id;
+
     private String currencyName;
 
     public CurrencyForm() {
     }
 
-    public CurrencyForm(String currencyName) {
+    public CurrencyForm(Integer id, String currencyName) {
+        this.id = id;
         this.currencyName = currencyName;
     }
 
@@ -21,24 +24,33 @@ public final class CurrencyForm {
         this.currencyName = currencyName;
     }
 
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CurrencyForm that = (CurrencyForm) o;
-        return Objects.equals(currencyName, that.currencyName);
+        return Objects.equals(id, that.id) &&
+                Objects.equals(currencyName, that.currencyName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(currencyName);
+        return Objects.hash(id, currencyName);
     }
 
     @Override
     public String toString() {
         return "CurrencyForm{" +
-                "currencyName='" + currencyName + '\'' +
+                "id=" + id +
+                ", currencyName='" + currencyName + '\'' +
                 '}';
     }
 }

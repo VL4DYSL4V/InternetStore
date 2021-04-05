@@ -21,7 +21,7 @@ import java.util.HashSet;
 import java.util.Objects;
 
 @Repository("userDao")
-public class HibernateUserDao implements UserDao {
+public final class HibernateUserDao implements UserDao {
 
     private final CommentDao ormCommentDao;
 

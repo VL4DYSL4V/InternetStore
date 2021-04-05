@@ -20,7 +20,7 @@ public class ViewConfig {
     public ContentNegotiatingViewResolver contentNegotiatingViewResolver(ContentNegotiationManager contentNegotiationManager) {
         ContentNegotiatingViewResolver contentNegotiatingViewResolver = new ContentNegotiatingViewResolver();
         contentNegotiatingViewResolver.setContentNegotiationManager(contentNegotiationManager);
-        List<ViewResolver> viewResolvers = new ArrayList<ViewResolver>(5) {{
+        List<ViewResolver> viewResolvers = new ArrayList<ViewResolver>() {{
             add(beanNameViewResolver());
             add(internalResourceViewResolver());
         }};
