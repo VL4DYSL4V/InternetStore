@@ -1,17 +1,16 @@
 package converter;
 
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 
+@Component
 public final class StringToLocalDateConverter implements Converter<String, LocalDate> {
 
-    private static final DateTimeFormatter formatter = new DateTimeFormatterBuilder()
-            .appendOptional( DateTimeFormatter.ofPattern( "yyyy-MM-dd" ) )
-            .optionalStart().appendPattern( "dd/MM/yyyy" ).optionalEnd()
-            .toFormatter();
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @Override
     public LocalDate convert(String date) {

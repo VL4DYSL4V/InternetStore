@@ -45,7 +45,7 @@ public class ViewConfig {
     }
 
     @Bean
-    public View jsonCountryTemplate() {
+    public View jsonTemplate() {
         MappingJackson2JsonView view = new MappingJackson2JsonView();
         view.setPrettyPrint(true);
         return view;

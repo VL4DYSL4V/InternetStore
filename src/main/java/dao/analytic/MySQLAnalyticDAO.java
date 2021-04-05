@@ -105,17 +105,20 @@ public final class MySQLAnalyticDAO implements AnalyticDAO{
             preparedStatement.setString(1, DATE_TIME_FORMATTER.format(start));
             preparedStatement.setString(2, DATE_TIME_FORMATTER.format(end));
             try(ResultSet resultSet = preparedStatement.executeQuery()){
-                return resultSet.getLong("user_amount");
+                if(resultSet.next()) {
+                    return resultSet.getLong("user_amount");
+                }
             }
         } catch (SQLException e) {
             throw new FetchException(e);
         }
+        return -1;
     }
 
 //    Сопоставьте количества товаров с каждой валютой.
     @Override
     public Map<Currency, Integer> currencyToItemAmount() throws FetchException {
-        String sql = "SELECT IF(item_id IS NULL, 0, COUNT(currency_name)) AS amount_of_items, currency_name" +
+        String sql = "SELECT IF(item_id IS NULL, 0, COUNT(currency_name)) AS amount_of_items, currency.currency_id" +
                 "    FROM item" +
                 "    RIGHT JOIN currency USING (currency_id)" +
                 "    GROUP BY currency_name;";
@@ -124,7 +127,7 @@ public final class MySQLAnalyticDAO implements AnalyticDAO{
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             ResultSet resultSet = preparedStatement.executeQuery()){
             while(resultSet.next()){
-                currencyIdToAmount.put(resultSet.getInt("currency_name"),
+                currencyIdToAmount.put(resultSet.getInt("currency_id"),
                         resultSet.getInt("amount_of_items"));
            }
         }catch (SQLException e){

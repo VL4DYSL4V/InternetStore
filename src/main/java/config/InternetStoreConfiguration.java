@@ -19,7 +19,7 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import java.util.Locale;
 
 @Configuration
-@ComponentScan(value = {"config", "controller", "dao", "service", "validation"})
+@ComponentScan(value = {"config", "controller", "converter", "dao", "service", "validation"})
 @EnableWebMvc
 @Import(value = {
         DatabaseConfig.class,

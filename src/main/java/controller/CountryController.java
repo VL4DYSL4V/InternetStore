@@ -83,7 +83,7 @@ public final class CountryController {
         } catch (FetchException e) {
             e.printStackTrace();
         }
-        return "jsonCountryTemplate";
+        return "jsonTemplate";
     }
 
     @PostMapping("/{id}/delete")
