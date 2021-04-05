@@ -7,4 +7,8 @@ will break comment DAO;
 with JPQL queries;
 7) Ask about comment and item description validation(html-insertions etc);
 8) Create implementation of TextValidator to avoid insertion of absurd text
-9) Add checks to mirror dataBase requirements
+++++ 9) Add checks to mirror dataBase requirements
+10) Eliminate duplicate code in all dao-s;
+
+11)INCORRECT USAGE OF REJECTION IN VALIDATORS!! 
+IT MUST USE INFORMATION FROM PROPERTIES, LIKE IN COUNTRYFORMVALIDATOR

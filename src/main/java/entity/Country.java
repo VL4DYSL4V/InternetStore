@@ -9,7 +9,7 @@ import java.util.Objects;
 @Table
 @Entity(name = "country")
 @Cacheable
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @NotThreadSafe
 public final class Country {
 

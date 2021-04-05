@@ -2,7 +2,7 @@ package config;
 
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
-public final class InternetStoreInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
+public final class Initializer extends AbstractAnnotationConfigDispatcherServletInitializer {
     @Override
     protected Class<?>[] getRootConfigClasses() {
         return new Class[0];

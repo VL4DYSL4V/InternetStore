@@ -9,7 +9,7 @@ import java.util.Objects;
 @Table
 @Entity(name = "currency")
 @Cacheable
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 
 @NotThreadSafe
 public final class Currency {
@@ -23,6 +23,10 @@ public final class Currency {
     private String currencyName;
 
     public Currency() {
+    }
+
+    public Currency(String currencyName){
+        this.currencyName = currencyName;
     }
 
     public Currency(int id, String currencyName) {

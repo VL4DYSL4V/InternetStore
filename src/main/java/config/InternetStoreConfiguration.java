@@ -1,72 +1,66 @@
 package config;
 
-import org.springframework.context.annotation.*;
+import converter.StringToLocalDateConverter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.format.FormatterRegistry;
+import org.springframework.http.MediaType;
+import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.config.annotation.*;
+import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
+
+import java.util.Locale;
 
 @Configuration
-@ComponentScan(value = {"config", "dao", "service", "validation"})
-//@EnableWebMvc
+@ComponentScan(value = {"config", "controller", "dao", "service", "validation"})
+@EnableWebMvc
 @Import(value = {
         DatabaseConfig.class,
-        SecurityConfig.class
+        SecurityConfig.class,
+        ViewConfig.class
 })
-public class InternetStoreConfiguration{
+public class InternetStoreConfiguration implements WebMvcConfigurer {
 
-//    @Override
-//    public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
-//        configurer.ignoreAcceptHeader(true).defaultContentType(MediaType.ALL);
-//    }
-//
-//    @Bean
-//    public ContentNegotiatingViewResolver contentNegotiatingViewResolver(
-//            ContentNegotiationManager contentNegotiationManager){
-//        ContentNegotiatingViewResolver contentNegotiatingViewResolver =
-//                new ContentNegotiatingViewResolver();
-//        contentNegotiatingViewResolver.setContentNegotiationManager(contentNegotiationManager);
-//        List<ViewResolver> viewResolvers = new ArrayList<>(5);
-//        viewResolvers.add(new BeanNameViewResolver());
-//        viewResolvers.add(internalResourceViewResolver());
-//        contentNegotiatingViewResolver.setViewResolvers(viewResolvers);
-//        return contentNegotiatingViewResolver;
-//    }
+    @Override
+    public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
+        configurer.ignoreAcceptHeader(true).defaultContentType(MediaType.ALL);
+    }
 
-//    @Bean
-//    public InternalResourceViewResolver internalResourceViewResolver(){
-//        InternalResourceViewResolver internalResourceViewResolver =
-//                new InternalResourceViewResolver();
-//        internalResourceViewResolver.setPrefix("/WEB-INF/jsp/");
-//        internalResourceViewResolver.setSuffix(".jsp");
-//        return internalResourceViewResolver;
-//    }
-//
-//    @Bean
-//    public LocaleChangeInterceptor localeChangeInterceptor(){
-//        LocaleChangeInterceptor localeChangeInterceptor = new LocaleChangeInterceptor();
-//        localeChangeInterceptor.setParamName("lang");
-//        return localeChangeInterceptor;
-//    }
-//
-//    @Bean
-//    public LocaleResolver localeResolver(){
-//        SessionLocaleResolver localeResolver = new SessionLocaleResolver();
-//        localeResolver.setDefaultLocale(new Locale("en"));
-//        return localeResolver;
-//    }
-//
-//    @Bean
-//    public MessageSource messageSource(){
-//        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-//        messageSource.setBasename("messages_en.properties");
-//        return messageSource;
-//    }
+    @Bean
+    public LocaleChangeInterceptor localeChangeInterceptor() {
+        LocaleChangeInterceptor localeChangeInterceptor = new LocaleChangeInterceptor();
+        localeChangeInterceptor.setParamName("lang");
+        return localeChangeInterceptor;
+    }
 
+    @Bean
+    public LocaleResolver localeResolver() {
+        SessionLocaleResolver localeResolver = new SessionLocaleResolver();
+        localeResolver.setDefaultLocale(new Locale("en"));
+        return localeResolver;
+    }
 
-//    @Override
-//    public void addFormatters(FormatterRegistry registry) {
-//        registry.addConverter(new StringToLocalDateFormatter());
-//    }
-//
-//    @Override
-//    public void addInterceptors(InterceptorRegistry registry) {
-//        registry.addInterceptor(localeChangeInterceptor());
-//    }
+    @Bean
+    public MessageSource messageSource() {
+        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+        messageSource.setBasename("messages");
+        return messageSource;
+    }
+
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+        registry.addConverter(new StringToLocalDateConverter());
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(localeChangeInterceptor());
+    }
 }

@@ -29,13 +29,12 @@ public final class CountryFormValidator implements Validator {
         if (o instanceof CountryForm) {
             CountryForm countryForm = (CountryForm) o;
             String countryName = countryForm.getCountryName();
-            if (countryName == null) {
-                errors.rejectValue("countryName", "country name is null");
-            } else if (countryName.length() < MIN_NAME_LENGTH || countryName.length() > MAX_NAME_LENGTH) {
-                errors.rejectValue("countryName",
-                        String.format("Name size must be between %d and %d", MIN_NAME_LENGTH, MAX_NAME_LENGTH));
+            if (countryName.length() < MIN_NAME_LENGTH) {
+                errors.rejectValue("countryName", "tooShortCountryName", "Name is too short");
+            } else if (countryName.length() > MAX_NAME_LENGTH) {
+                errors.rejectValue("countryName", "tooLongCountryName", "Name is too long");
             } else if (!COUNTRY_NAME_PATTERN.matcher(countryName).matches()) {
-                errors.rejectValue("countryName", "Invalid country name");
+                errors.rejectValue("countryName", "invalidCountryName", "Invalid name");
             }
         }
     }

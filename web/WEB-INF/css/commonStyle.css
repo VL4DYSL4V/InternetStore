@@ -1,0 +1,35 @@
+.centered{
+    margin: auto;
+    text-align: center;
+}
+
+.whiteFont{
+    color: aliceblue;
+}
+
+.standardButton{
+    font-size: 1vw;
+    color: aliceblue;
+    border: 0.1vw black solid;
+    background: transparent;
+}
+
+.form{
+    border: double aliceblue;
+    display: table;
+    margin: 1vw;
+}
+
+.formRow{
+    display: table-row;
+}
+
+.formCell{
+    display: table-cell;
+    padding-bottom: 0.5vw;
+}
+
+.error {
+    color: #ff0000;
+    font-weight: bold;
+}
