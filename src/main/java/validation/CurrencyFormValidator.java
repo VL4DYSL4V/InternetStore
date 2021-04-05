@@ -24,12 +24,10 @@ public final class CurrencyFormValidator implements Validator {
         if(o instanceof CurrencyForm){
             CurrencyForm currencyForm = (CurrencyForm) o;
             String currencyName = currencyForm.getCurrencyName();
-            if(currencyName == null){
-                errors.rejectValue("currencyName", "currency name is null");
-            }else if(currencyName.length() != NAME_LENGTH){
-                errors.rejectValue("currencyName", String.format("Length of name must be %d", NAME_LENGTH));
+            if(currencyName.length() != NAME_LENGTH){
+                errors.rejectValue("currencyName", "wrongCurrencyNameLength", "Name length must be 3");
             } else if(! CURRENCY_NAME_PATTERN.matcher(currencyName).matches()){
-                errors.rejectValue("currencyName", "Invalid currency name");
+                errors.rejectValue("currencyName", "invalidCurrencyName", "Invalid name");
             }
         }
 
