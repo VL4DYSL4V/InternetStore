@@ -1,4 +1,4 @@
-package service;
+package service.encryption;
 
 import exception.encryption.EncryptionException;
 
@@ -7,6 +7,6 @@ import java.security.spec.InvalidKeySpecException;
 
 public interface EncryptionService {
 
-    byte[] getEncrypted(String password) throws EncryptionException;
+    String getEncrypted(String password) throws EncryptionException;
 
 }

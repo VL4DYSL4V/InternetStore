@@ -2,7 +2,9 @@ package dto;
 
 import java.util.Objects;
 
-public final class UserForm {
+public final class SignUpForm {
+
+    private Long id;
 
     private String name;
 
@@ -14,15 +16,24 @@ public final class UserForm {
 
     private String email;
 
-    public UserForm() {
+    public SignUpForm() {
     }
 
-    public UserForm(String name, String password, String passwordMatch, String phoneNumber, String email) {
+    public SignUpForm(Long id, String name, String password, String passwordMatch, String phoneNumber, String email) {
+        this.id = id;
         this.name = name;
         this.password = password;
         this.passwordMatch = passwordMatch;
         this.phoneNumber = phoneNumber;
         this.email = email;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -69,23 +80,25 @@ public final class UserForm {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        UserForm userForm = (UserForm) o;
-        return Objects.equals(name, userForm.name) &&
-                Objects.equals(password, userForm.password) &&
-                Objects.equals(passwordMatch, userForm.passwordMatch) &&
-                Objects.equals(phoneNumber, userForm.phoneNumber) &&
-                Objects.equals(email, userForm.email);
+        SignUpForm signUpForm = (SignUpForm) o;
+        return Objects.equals(id, signUpForm.id) &&
+                Objects.equals(name, signUpForm.name) &&
+                Objects.equals(password, signUpForm.password) &&
+                Objects.equals(passwordMatch, signUpForm.passwordMatch) &&
+                Objects.equals(phoneNumber, signUpForm.phoneNumber) &&
+                Objects.equals(email, signUpForm.email);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, password, passwordMatch, phoneNumber, email);
+        return Objects.hash(id, name, password, passwordMatch, phoneNumber, email);
     }
 
     @Override
     public String toString() {
         return "UserForm{" +
-                "name='" + name + '\'' +
+                "id=" + id +
+                ", name='" + name + '\'' +
                 ", password='" + password + '\'' +
                 ", passwordMatch='" + passwordMatch + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +

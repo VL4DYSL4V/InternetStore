@@ -4,7 +4,6 @@
 
 <style>
     <%@include file="../../css/background.css"%>
-    <%@include file="../../css/tableStyle.css"%>
     <%@include file="../../css/commonStyle.css"%>
 </style>
 

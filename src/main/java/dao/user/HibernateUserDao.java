@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
@@ -111,6 +112,23 @@ public final class HibernateUserDao implements UserDao {
             transaction.commit();
         } catch (HibernateException e) {
             throw new DeleteException(e);
+        }
+    }
+
+    @Override
+    @Nullable
+    public User getByName(String name) throws FetchException {
+        Objects.requireNonNull(name);
+        try(Session session = HibernateUtils.openSession()){
+            Transaction transaction = session.beginTransaction();
+            Query<User> userQuery = session
+                    .createQuery("SELECT u FROM entity.User u WHERE u.name = :name", User.class);
+            userQuery.setParameter("name", name);
+            User user = userQuery.uniqueResult();
+            transaction.commit();
+            return user;
+        }catch (HibernateException e){
+            throw new FetchException(e);
         }
     }
 }

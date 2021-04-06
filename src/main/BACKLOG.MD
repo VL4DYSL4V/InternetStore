@@ -12,3 +12,4 @@ with JPQL queries;
 
 11)INCORRECT USAGE OF REJECTION IN VALIDATORS!! 
 IT MUST USE INFORMATION FROM PROPERTIES, LIKE IN COUNTRYFORMVALIDATOR
+12)Find out how to correctly display punishment time for users, who couldn't sign in 
