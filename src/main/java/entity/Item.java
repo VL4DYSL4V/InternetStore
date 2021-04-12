@@ -40,13 +40,13 @@ public final class Item {
     @Column(name = "put_up_for_sale", nullable = false)
     private Date putUpForSale;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "itemId")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "itemId")
     private Collection<Comment> comments = new HashSet<>();
 
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "country_id")
     private Country country;
 

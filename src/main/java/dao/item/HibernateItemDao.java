@@ -1,6 +1,9 @@
 package dao.item;
 
+import dao.comment.CommentDao;
+import dao.country.CountryDao;
 import dao.utils.SimilarNameCreator;
+import entity.Country;
 import entity.Item;
 import exception.dao.DeleteException;
 import exception.dao.FetchException;
@@ -20,6 +23,14 @@ import java.util.Objects;
 @Repository("itemDao")
 public final class HibernateItemDao implements ItemDao {
 
+    private final CommentDao commentDao;
+    private final CountryDao countryDao;
+
+    public HibernateItemDao(CommentDao commentDao, CountryDao countryDao) {
+        this.commentDao = commentDao;
+        this.countryDao = countryDao;
+    }
+
     @Override
     public Item getById(Long id) throws FetchException {
         Objects.requireNonNull(id);
@@ -27,6 +38,8 @@ public final class HibernateItemDao implements ItemDao {
         try (Session session = HibernateUtils.openSession()) {
             Transaction transaction = session.beginTransaction();
             out = session.get(Item.class, id);
+            out.setComments(commentDao.commentsWithItemId(id));
+
             transaction.commit();
         } catch (Throwable t) {
             throw new FetchException(t);
@@ -98,18 +111,18 @@ public final class HibernateItemDao implements ItemDao {
     public Collection<Item> itemsWithSimilarName(String name) throws FetchException {
         Objects.requireNonNull(name);
         Collection<Item> out = new LinkedList<>();
-        try (Session session = HibernateUtils.openSession()) {
-            Transaction transaction = session.beginTransaction();
-            Query<Item> query = session.createQuery("SELECT i FROM entity.Item i WHERE i.name LIKE :name", Item.class);
-            Collection<String> similarStrings = SimilarNameCreator.createSimilarStrings(name);
-            for (String s : similarStrings) {
-                query.setParameter("name", s);
-                out.addAll(query.list());
-            }
-            transaction.commit();
-        } catch (HibernateException e) {
-            throw new FetchException(e);
-        }
+//        try (Session session = HibernateUtils.openSession()) {
+//            Transaction transaction = session.beginTransaction();
+//            Query<Item> query = session.createQuery("SELECT i FROM entity.Item i WHERE i.name LIKE :name", Item.class);
+//            Collection<String> similarStrings = SimilarNameCreator.createSimilarStrings(name);
+//            for (String s : similarStrings) {
+//                query.setParameter("name", s);
+//                out.addAll(query.list());
+//            }
+//            transaction.commit();
+//        } catch (HibernateException e) {
+//            throw new FetchException(e);
+//        }
         return out;
     }
 

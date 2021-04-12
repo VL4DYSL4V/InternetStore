@@ -121,7 +121,8 @@ public final class MySQLAnalyticDAO implements AnalyticDAO{
         String sql = "SELECT IF(item_id IS NULL, 0, COUNT(currency_name)) AS amount_of_items, currency.currency_id" +
                 "    FROM item" +
                 "    RIGHT JOIN currency USING (currency_id)" +
-                "    GROUP BY currency_name;";
+                "    GROUP BY currency_name" +
+                "    ORDER BY amount_of_items;";
         Map<Integer, Integer> currencyIdToAmount = new HashMap<>();
         try(Connection connection = dataSource.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(sql);

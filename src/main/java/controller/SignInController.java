@@ -71,9 +71,9 @@ public final class SignInController {
     /** Return true if value was rejected, else - false;
      * */
     private boolean reject(LocalTime timeBeforeRetry, BindingResult bindingResult, HttpSession httpSession){
+        httpSession.setAttribute("timeBeforeRetry", timeBeforeRetry);
         if(timeBeforeRetry != null) {
             bindingResult.rejectValue("password", "user.signIn.haveToWait", "Wait for: ");
-            httpSession.setAttribute("timeBeforeRetry", timeBeforeRetry);
             return true;
         }
         return false;
